@@ -1,5 +1,17 @@
 import * as editor from "./editor.js";
 
+const editBlog = (index) => {
+    console.log('edit clicked', index);
+}
+
+const deleteBlog = (index) => {
+    store.blogs.splice(index, 1);
+    updateStorage();
+    const blogsEle = document.querySelector('.blogApp .blogs');
+    removeBlogsFromDOM(blogsEle);
+    addBlogsToDOM(blogsEle);
+}
+
 const createBlog = (title, content) => {
   const blogEle = document.createElement('div');
   blogEle.classList.add('blog');
@@ -13,14 +25,17 @@ const createBlog = (title, content) => {
   const contentEle = document.createElement('div');
   contentEle.innerHTML = content;
 
+  const index = store.blogs.length - 1;
   const buttonsEle = document.createElement('div');
   const editButton = document.createElement('button');
   editButton.className = 'blog-button blog-button__primary';
   editButton.innerHTML = 'Edit';
+  editButton.addEventListener('click', () => editBlog(index));
 
   const deleteButton = document.createElement('button');
   deleteButton.className = 'blog-button blog-button__error';
   deleteButton.innerHTML = 'Delete';
+  deleteButton.addEventListener('click', () => deleteBlog(index));
 
   buttonsEle.appendChild(editButton);
   buttonsEle.appendChild(deleteButton);
@@ -34,11 +49,37 @@ const createBlog = (title, content) => {
   return blogEle;
 };
 
-const addBlog = (title, content) => {
-  const blogsEle = document.querySelector('.blogApp .blogs');
-  const blogEle = createBlog(title, content);
-  blogsEle.appendChild(blogEle);
+let store = {
+    blogs: [],
+    wizardState: {
+        step: 0
+    },
 };
+
+const updateStorage = () => {
+  window.localStorage.setItem('blogs', JSON.stringify(store.blogs));
+}
+
+const addBlog = (title, content) => {
+  store.blogs.push({title: title, body: content});
+  updateStorage();
+  const blogsEle = document.querySelector('.blogApp .blogs');
+  removeBlogsFromDOM(blogsEle);
+  addBlogsToDOM(blogsEle);
+};
+
+const addBlogsToDOM = (dom) => {
+  store.blogs.forEach((blog) => {
+    const blogEle = createBlog(blog.title, blog.body);
+    dom.appendChild(blogEle);
+  });
+}
+
+const removeBlogsFromDOM = (dom) => {
+  while (dom.hasChildNodes()) {
+    dom.removeChild(dom.lastChild);
+  }
+}
 
 const save = (ed) => {
   // Get the blog title element
@@ -60,29 +101,31 @@ const initApp = (mode) => {
 
   // Create the editor content
   blogAppEle.innerHTML = `<div class="content">
-          <header>
-              <h1>Tiny Blogs</h1>
-          </header>
-          <div class="blog-form">
-              <div class="blog-form__group">
-                  <label class="blog-label">Title:</label>
-                  <input id="blog-title" type="text" class="blog-textfield" />
-              </div>
-              <div class="blog-form__group">
-                  <label class="blog-label">Content:</label>
-                  <textarea id="editor"></textarea>
-              </div>
-              <footer>
-                  <button id="save" class="blog-button blog-button__primary">Save</button>
-                  <button id="help" class="blog-button">Help</button>
-              </footer>
+      <header>
+          <h1>Tiny Blogs</h1>
+      </header>
+      <div class="blog-form">
+          <div class="blog-form__group">
+              <label class="blog-label">Title:</label>
+              <input id="blog-title" type="text" class="blog-textfield" />
           </div>
-      </div>`;
+          <div class="blog-form__group">
+              <label class="blog-label">Content:</label>
+              <textarea id="editor"></textarea>
+          </div>
+          <footer>
+              <button id="save" class="blog-button blog-button__primary">Save</button>
+              <button id="help" class="blog-button">Help</button>
+          </footer>
+      </div>
+  </div>`;
 
   // Add the blogs container
   const blogsEle = document.createElement('div');
   blogsEle.classList.add('blogs');
   blogAppEle.appendChild(blogsEle);
+
+  const storage = window.localStorage;
 
   // Load the editor
   editor.load(mode).then((ed) => {
@@ -94,5 +137,6 @@ const initApp = (mode) => {
 
 export {
   addBlog,
-  initApp
+  initApp,
+  store
 }
