@@ -34,6 +34,26 @@ const createBlog = (title, content) => {
   return blogEle;
 };
 
+const addBlog = (title, content) => {
+  const blogsEle = document.querySelector('.blogApp .blogs');
+  const blogEle = createBlog(title, content);
+  blogsEle.appendChild(blogEle);
+};
+
+const save = (ed) => {
+  // Get the blog title element
+  const titleEle = document.getElementById('blog-title');
+
+  // Create the blog and add it to the blogs list
+  if (titleEle.value.length > 0 && ed.getContent().length > 0) {
+    addBlog(titleEle.value, ed.getContent());
+
+    // Reset the blog input/editor
+    titleEle.value = null;
+    editor.reset(ed);
+  }
+};
+
 const initApp = (mode) => {
   const blogAppEle = document.getElementById('blogApp');
   blogAppEle.classList.add('blogApp');
@@ -66,25 +86,13 @@ const initApp = (mode) => {
 
   // Load the editor
   editor.load(mode).then((ed) => {
-    const save = document.getElementById('save');
-    save.addEventListener('click', () => {
-      // Get the blog title element
-      const titleEle = document.getElementById('blog-title');
-
-      // Create the blog and add it to the blogs list
-      if (titleEle.value.length > 0 && ed.getContent().length > 0) {
-        const blogEle = createBlog(titleEle.value, ed.getContent());
-        blogsEle.appendChild(blogEle);
-
-        // Reset the blog input/editor
-        titleEle.value = null;
-        editor.reset(ed);
-      }
-    });
+    // Register the save click event
+    const saveElm = document.getElementById('save');
+    saveElm.addEventListener('click', () => save(ed));
   });
 };
 
 export {
-  createBlog,
+  addBlog,
   initApp
 }
