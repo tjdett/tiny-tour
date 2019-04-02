@@ -1,3 +1,5 @@
+import * as editor from "./editor.js";
+
 const createBlog = (title, content) => {
   const blogEle = document.createElement('div');
   blogEle.classList.add('blog');
@@ -32,43 +34,54 @@ const createBlog = (title, content) => {
   return blogEle;
 };
 
-const initApp = () => {
+const initApp = (mode) => {
   const blogAppEle = document.getElementById('blogApp');
-  blogAppEle.innerHTML = `<div class="wrapper">
-        <div class="content">
-            <header>
-                <h1>Tiny Blogs</h1>
-            </header>
-            <div class="blog-form">
-                <div class="blog-form__group">
-                    <label class="blog-label">Title:</label>
-                    <input id="blog-title" type="text" class="blog-textfield" />
-                </div>
-                <div class="blog-form__group">
-                    <label class="blog-label">Content:</label>
-                    <textarea id="editor"></textarea>
-                </div>
-                <footer>
-                    <button id="save" class="blog-button blog-button__primary">Save</button>
-                    <button id="help" class="blog-button">Help</button>
-                </footer>
-            </div>
-        </div>
-        <div id="blogs">
-            <div class="blog">
-                <div class="inner">
-                    <h2>Blog</h2>
-                    <div>
-                        <p>Some content</p>
-                    </div>
-                </div>
-                <div class="blog-buttons">
-                    <button class="blog-button blog-button__primary">edit</button>
-                    <button class="blog-button blog-button__error">delete</button>
-                </div>
-            </div>
-        </div>
-    </div>`
+  blogAppEle.classList.add('blogApp');
+
+  // Create the editor content
+  blogAppEle.innerHTML = `<div class="content">
+          <header>
+              <h1>Tiny Blogs</h1>
+          </header>
+          <div class="blog-form">
+              <div class="blog-form__group">
+                  <label class="blog-label">Title:</label>
+                  <input id="blog-title" type="text" class="blog-textfield" />
+              </div>
+              <div class="blog-form__group">
+                  <label class="blog-label">Content:</label>
+                  <textarea id="editor"></textarea>
+              </div>
+              <footer>
+                  <button id="save" class="blog-button blog-button__primary">Save</button>
+                  <button id="help" class="blog-button">Help</button>
+              </footer>
+          </div>
+      </div>`;
+
+  // Add the blogs container
+  const blogsEle = document.createElement('div');
+  blogsEle.classList.add('blogs');
+  blogAppEle.appendChild(blogsEle);
+
+  // Load the editor
+  editor.load(mode).then((ed) => {
+    const save = document.getElementById('save');
+    save.addEventListener('click', () => {
+      // Get the blog title element
+      const titleEle = document.getElementById('blog-title');
+
+      // Create the blog and add it to the blogs list
+      if (titleEle.value.length > 0 && ed.getContent().length > 0) {
+        const blogEle = createBlog(titleEle.value, ed.getContent());
+        blogsEle.appendChild(blogEle);
+
+        // Reset the blog input/editor
+        titleEle.value = null;
+        editor.reset(ed);
+      }
+    });
+  });
 };
 
 export {

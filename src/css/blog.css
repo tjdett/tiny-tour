@@ -1,9 +1,21 @@
-#blogApp * {
+.blogApp {
+    display: flex;
+    height: 100%;
+}
+
+.blogApp * {
     box-sizing: border-box;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
 }
 
-#blogApp .blog {
+.blogApp .blogs {
+    width: 25%;
+    box-sizing: border-box;
+    border-left: 1px solid #ccc;;
+    height: 100%;
+}
+
+.blogApp .blog {
     padding: 10px;
     border-bottom: 1px solid #ccc;
     display: flex;
@@ -14,32 +26,27 @@
     flex-direction: column;
 }
 
-#blogApp footer {
+.blogApp footer {
     display: flex;
     justify-content: space-between;
 }
 
-#blogApp .wrapper {
-    display: flex;
-    height: 100%;
-}
-
-#blogApp .content {
+.blogApp .content {
     padding: 10px;
     width: 75%;
 }
 
-#blogApp .blog-form__group {
+.blogApp .blog-form__group {
     margin-bottom: 8px;
 }
 
-#blogApp .blog-label {
+.blogApp .blog-label {
     color: rgba(34,47,62,.6);
     font-size: 14px;
     line-height: 1.3;
 }
 
-#blogApp .blog-textfield {
+.blogApp .blog-textfield {
     border: 1px solid #ccc;
     border-radius: 3px;
     font-size: 16px;
@@ -47,7 +54,7 @@
     width: 100%;
 }
 
-#blogApp .blog-button {
+.blogApp .blog-button {
     background-color: #f0f0f0;
     border: 1px solid #f0f0f0;
     border-radius: 3px;
@@ -58,21 +65,14 @@
     padding: 4px 16px;
 }
 
-#blogApp .blog-button__primary {
+.blogApp .blog-button__primary {
     background-color: #3498db;
     border: 1px solid #3498db;
     color: white;
 }
 
-#blogApp .blog-button__error {
+.blogApp .blog-button__error {
     background-color: #d80606;
     border: 1px solid #d80606;
     color: white;
-}
-
-#blogs {
-    width: 25%;
-    box-sizing: border-box;
-    border-left: 1px solid #ccc;;
-    height: 100%;
 }
