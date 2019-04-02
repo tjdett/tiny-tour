@@ -16,11 +16,13 @@ const createBlog = (title, content) => {
   const buttonsEle = document.createElement('div');
   const editButton = document.createElement('button');
   editButton.className = 'blog-button blog-button__primary';
-  editButton.innerHTML = 'Edit';
+  editButton.title = 'Edit';
+  editButton.innerHTML = '<i class="far fa-edit"></i>';
 
   const deleteButton = document.createElement('button');
   deleteButton.className = 'blog-button blog-button__error';
-  deleteButton.innerHTML = 'Delete';
+  deleteButton.title = 'Delete';
+  deleteButton.innerHTML = '<i class="far fa-trash-alt"></i>';
 
   buttonsEle.appendChild(editButton);
   buttonsEle.appendChild(deleteButton);
@@ -62,6 +64,7 @@ const initApp = (mode) => {
   blogAppEle.innerHTML = `<div class="content">
           <header>
               <h1>Tiny Blogs</h1>
+              <div><button id="help" class="blog-button" title="Help"><i class="far fa-question-circle"></i></button></div>
           </header>
           <div class="blog-form">
               <div class="blog-form__group">
@@ -74,7 +77,6 @@ const initApp = (mode) => {
               </div>
               <footer>
                   <button id="save" class="blog-button blog-button__primary">Save</button>
-                  <button id="help" class="blog-button">Help</button>
               </footer>
           </div>
       </div>`;
@@ -86,7 +88,7 @@ const initApp = (mode) => {
 
   // Load the editor
   editor.load(mode).then((ed) => {
-    // Register the save click event
+    // Bind to click events on the save button
     const saveElm = document.getElementById('save');
     saveElm.addEventListener('click', () => save(ed));
   });

@@ -6,11 +6,12 @@ const fullConfig = {
   toolbar: 'image lists media table help'
 };
 
-const load = (mode) => {
+const load = (mode, skin) => {
   const config = mode === 'full' ? fullConfig: basicConfig;
   return tinymce.init({
+    ...config,
     selector: '#editor',
-    ...config
+    skin: skin || 'oxide'
   }).then((editors) => editors[0]);
 };
 

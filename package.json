@@ -7,10 +7,8 @@
   },
   "author": "",
   "devDependencies": {
+    "@fortawesome/fontawesome-free": "^5.8.1",
     "tinymce": "^5.0.3"
   },
-  "dependencies": {
-    "jquery": "^3.3.1",
-    "tingle.js": "^0.14.0"
-  }
+  "dependencies": {}
 }
