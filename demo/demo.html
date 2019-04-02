@@ -6,6 +6,9 @@
     <link rel="stylesheet" href="css/demo.css" />
     <link rel="stylesheet" href="../src/css/blog.css" />
     <script src="../node_modules/tinymce/tinymce.js"></script>
+    <link rel="stylesheet" href="../node_modules/tingle.js/dist/tingle.min.css">
+    <script src="../node_modules/tingle.js/dist/tingle.min.js"></script>
+    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
 </head>
 <body>
     <div id="blogApp"></div>
@@ -31,7 +34,9 @@
           }
         };
 
-        tour.init('basic', tourConfig);
+        tour.init('full', tourConfig);
     </script>
+
+    <script src="js/demo.js"></script>
 </body>
 </html>

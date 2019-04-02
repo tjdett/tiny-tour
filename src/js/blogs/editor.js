@@ -2,7 +2,8 @@ const basicConfig = {
   menubar: false
 };
 const fullConfig = {
-  plugins: 'image list media table help'
+  plugins: 'image lists media table help',
+  toolbar: 'image lists media table help'
 };
 
 const load = (mode) => {

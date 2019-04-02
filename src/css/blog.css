@@ -6,6 +6,12 @@
 #blogApp .blog {
     padding: 10px;
     border-bottom: 1px solid #ccc;
+    display: flex;
+}
+
+#blogApp .blog .inner {
+    flex-basis: 70%;
+    flex-direction: column;
 }
 
 #blogApp footer {
@@ -55,6 +61,12 @@
 #blogApp .blog-button__primary {
     background-color: #3498db;
     border: 1px solid #3498db;
+    color: white;
+}
+
+#blogApp .blog-button__error {
+    background-color: #d80606;
+    border: 1px solid #d80606;
     color: white;
 }
 

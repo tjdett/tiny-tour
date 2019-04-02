@@ -9,5 +9,8 @@
   "devDependencies": {
     "tinymce": "^5.0.3"
   },
-  "dependencies": {}
+  "dependencies": {
+    "jquery": "^3.3.1",
+    "tingle.js": "^0.14.0"
+  }
 }

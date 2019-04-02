@@ -12,12 +12,14 @@ const init = (mode, tourConfig) => {
       const titleEle = document.getElementById('blog-title');
 
       // Create the blog and add it to the blogs list
-      const newBlog = blogs.createBlog(titleEle.value, ed.getContent());
-      document.getElementById('blogs').appendChild(newBlog);
+      if (titleEle.value.length > 0 && ed.getContent().length > 0) {
+        const newBlog = blogs.createBlog(titleEle.value, ed.getContent());
+        document.getElementById('blogs').appendChild(newBlog);
 
-      // Reset the blog input/editor
-      titleEle.value = null;
-      editor.reset(ed);
+        // Reset the blog input/editor
+        titleEle.value = null;
+        editor.reset(ed);
+      }
     });
   });
 
