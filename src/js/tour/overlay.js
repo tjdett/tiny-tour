@@ -1,3 +1,112 @@
+const buildBlockerClose = (cb) => {
+  const close = document.createElement('button');
+  close.appendChild(document.createTextNode('X'));
+  close.addEventListener('click', cb);
+  close.style.fontWeight = 'bold';
+  close.style.fontSize = '14px';
+  close.style.position = 'fixed';
+  close.style.right = '5px';
+  close.style.top = '5px';
+  close.style.padding = '5px 8px';
+  close.style.borderRadius = '3px';
+  close.style.backgroundColor = '#fff';
+  return close;
+};
+
+const overlayElement = (element, zIndex) => {
+  if (element.getAttribute('style')) {
+    element.dataset.tinyPrevStyles = element.getAttribute('style');
+  }
+  element.style.backgroundColor = getBackgroundColor(element);
+  element.style.zIndex = zIndex;
+  element.style.border = '1px solid blue'
+};
+
+const restoreElement = (element) => {
+  element.setAttribute('style', element.dataset.tinyPrevStyles);
+};
+
+const bindOverlayElement = (element, elmConfig) => {
+  element.addEventListener('click', () => {
+    openDialog(elmConfig);
+  });
+};
+
+const getBackgroundColor = (elm) => {
+  let node = elm;
+  while (node !== null) {
+    const backgroundColor = window.getComputedStyle(node).backgroundColor;
+    if (backgroundColor !== 'rgba(0, 0, 0, 0)' && backgroundColor !== 'transparent') {
+      return backgroundColor;
+    }
+
+    node = node.parentNode;
+  }
+  return '#fff';
+};
+
+const openDialog = (elmConfig) => {
+  const buttons = [];
+  if (!elmConfig.buttons) {
+    buttons.push({
+      type: 'cancel',
+      text: 'close',
+      primary: true
+    });
+  } else {
+    elmConfig.buttons.forEach((button) => {
+      switch (button) {
+        case 'cancel':
+          buttons.push({
+            type: 'cancel',
+            text: 'Close'
+          });
+          break;
+        case 'submit':
+          buttons.push({
+            type: 'submit',
+            text: 'Save',
+            primary: true
+          });
+          break;
+        case 'next':
+          buttons.push({
+            type: 'custom',
+            name: 'next',
+            text: 'Next'
+          });
+          break;
+        case 'prev':
+          buttons.push({
+            type: 'custom',
+            name: 'prev',
+            text: 'Previous'
+          });
+          break;
+      }
+    });
+  }
+
+  tinymce.activeEditor.windowManager.open({
+    title: 'Tiny Tour',
+    size: 'large',
+    body: {
+      type: 'panel',
+      items: [
+        {
+          type: 'htmlpanel',
+          html: elmConfig.helpUrl ? `<iframe style="width: 100%; height: 100%" src="${elmConfig.helpUrl}"></iframe>` :
+            `<div>${elmConfig.helpHtml}</div>`
+        }
+      ]
+    },
+    onAction: elmConfig.onAction,
+    onClose: elmConfig.onClose,
+    onSubmit: elmConfig.onSubmit,
+    buttons
+  });
+};
+
 const init = (config, zIndex) => {
   const baseZIndex = zIndex || 101;
   const blockerZIndex = baseZIndex + 2;
@@ -52,7 +161,7 @@ const init = (config, zIndex) => {
       const elmConfig = config.help[selector];
       const elements = document.querySelectorAll(selector);
       elements.forEach((elm) => {
-        overlayElement(elm);
+        overlayElement(elm, baseZIndex + 1);
         overlays.push({ elm, config: elmConfig });
       });
     }
@@ -80,102 +189,6 @@ const init = (config, zIndex) => {
     blocker.style.zIndex = blockerZIndex;
 
     return blocker;
-  };
-
-  const buildBlockerClose = (cb) => {
-    const close = document.createElement('button');
-    close.appendChild(document.createTextNode('X'));
-    close.addEventListener('click', cb);
-    close.style.fontWeight = 'bold';
-    close.style.fontSize = '14px';
-    close.style.position = 'fixed';
-    close.style.right = '5px';
-    close.style.top = '5px';
-    close.style.padding = '5px 8px';
-    close.style.borderRadius = '3px';
-    close.style.backgroundColor = '#fff';
-    return close;
-  };
-
-  const overlayElement = (element) => {
-    if (element.getAttribute('style')) {
-      element.dataset.tinyPrevStyles = element.getAttribute('style');
-    }
-    element.style.backgroundColor = '#fff';
-    element.style.zIndex = baseZIndex + 1;
-    element.style.border = '1px solid blue'
-  };
-
-  const restoreElement = (element) => {
-    element.setAttribute('style', element.dataset.tinyPrevStyles);
-  };
-
-  const bindOverlayElement = (element, elmConfig) => {
-    element.addEventListener('click', () => {
-      openDialog(elmConfig);
-    });
-  };
-
-  const openDialog = (elmConfig) => {
-    const buttons = [];
-    if (!elmConfig.buttons) {
-      buttons.push({
-        type: 'cancel',
-        text: 'close',
-        primary: true
-      });
-    } else {
-      elmConfig.buttons.forEach((button) => {
-        switch (button) {
-          case 'cancel':
-            buttons.push({
-              type: 'cancel',
-              text: 'Close'
-            });
-            break;
-          case 'submit':
-            buttons.push({
-              type: 'submit',
-              text: 'Save',
-              primary: true
-            });
-            break;
-          case 'next':
-            buttons.push({
-              type: 'custom',
-              name: 'next',
-              text: 'Next'
-            });
-            break;
-          case 'prev':
-            buttons.push({
-              type: 'custom',
-              name: 'prev',
-              text: 'Previous'
-            });
-            break;
-        }
-      });
-    }
-
-    tinymce.activeEditor.windowManager.open({
-      title: 'Tiny Tour',
-      size: 'large',
-      body: {
-        type: 'panel',
-        items: [
-          {
-            type: 'htmlpanel',
-            html: elmConfig.helpUrl ? `<iframe style="width: 100%; height: 100%" src="${elmConfig.helpUrl}"></iframe>` :
-                                      `<div>${elmConfig.helpHtml}</div>`
-          }
-        ]
-      },
-      onAction: elmConfig.onAction,
-      onClose: elmConfig.onClose,
-      onSubmit: elmConfig.onSubmit,
-      buttons
-    });
   };
 
   return {
