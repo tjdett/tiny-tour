@@ -1,5 +1,5 @@
 import * as editor from "./editor.js";
-import EventDispatcher from "EventDispatcher";
+import EventDispatcher from "../../../node_modules/EventDispatcher/src/EventDispatcher.js";
 
 /**
  * Creates a Edit, Delete, etc... action button for a single blog.
@@ -92,7 +92,7 @@ const loadStorage = () => {
  * @param content The HTML content of the blog entry.
  */
 const addBlog = (store, title, content) => {
-  store.blogs.push({title: title, body: content});
+  store.data.blogs.push({title: title, body: content});
   updateStorage(store);
   renderBlogs(store);
 };
@@ -106,18 +106,18 @@ const addBlog = (store, title, content) => {
  */
 const editBlog = (store, index) => {
   if (store.editor) {
-    editor.populate(store.editor, store.blogs[index].body);
+    editor.populate(store.editor, store.data.blogs[index].body);
     store.editing = true;
     store.editIndex = index;
     const titleEle = document.getElementById('blog-title');
-    titleEle.value = store.blogs[index].title;
+    titleEle.value = store.data.blogs[index].title;
 
     store.eventDispatcher.trigger('edit');
   }
 };
 
 const confirmEdit = (store, title, content, index) => {
-  store.blogs[index] = {title: title, body: content};
+  store.data.blogs[index] = {title: title, body: content};
   updateStorage(store);
   renderBlogs(store);
 };
@@ -129,7 +129,7 @@ const confirmEdit = (store, title, content, index) => {
  * @param index The index of the blog to delete from the stores blog list.
  */
 const deleteBlog = (store, index) => {
-  store.blogs.splice(index, 1);
+  store.data.blogs.splice(index, 1);
   updateStorage(store);
   renderBlogs(store);
 };
@@ -149,7 +149,7 @@ const renderBlogs = (store) => {
  * @param dom The DOM element to add all the created blogs to
  */
 const addBlogsToDOM = (store, dom) => {
-  store.blogs.forEach((blog, index) => {
+  store.data.blogs.forEach((blog, index) => {
     const blogEle = createBlog(store, blog.title, blog.body, index);
     dom.appendChild(blogEle);
   });
@@ -230,13 +230,13 @@ const buildInitialHtml = (store) => {
                   <div>
                     <div class="blog-button-group">
                         <label>Skin:</label>
-                        <input type="radio" name="skin" value="default" ${store.skin === 'default' ? 'checked' : ''}> Default
-                        <input type="radio" name="skin" value="dark" ${store.skin === 'dark' ? 'checked' : ''}> Dark
+                        <input type="radio" name="skin" value="default" ${store.data.skin === 'default' ? 'checked' : ''}> Default
+                        <input type="radio" name="skin" value="dark" ${store.data.skin === 'dark' ? 'checked' : ''}> Dark
                     </div>
                     <div class="blog-button-group">
                         <label>Mode:</label>
-                        <input type="radio" name="mode" value="basic" ${store.mode === 'basic' ? 'checked' : ''}> Basic
-                        <input type="radio" name="mode" value="full" ${store.mode === 'full' ? 'checked' : ''}> Full
+                        <input type="radio" name="mode" value="basic" ${store.data.mode === 'basic' ? 'checked' : ''}> Basic
+                        <input type="radio" name="mode" value="full" ${store.data.mode === 'full' ? 'checked' : ''}> Full
                     </div>
                   </div>
               </footer>
@@ -262,7 +262,7 @@ const BlogsApp = (mode, skin) => {
     },
     editing: false,
     editIndex: 0,
-    eventDispatcher: EventDispatcher()
+    eventDispatcher: new EventDispatcher()
   };
 
   // Setup the root element, by adding the 'blogApp' class to allow styling and
@@ -272,7 +272,7 @@ const BlogsApp = (mode, skin) => {
   blogAppEle.style.visibility = 'hidden';
 
   // Add the dark class if we're running in dark mode
-  if (store.skin === 'dark') {
+  if (store.data.skin === 'dark') {
     blogAppEle.classList.add('dark');
   }
 
@@ -288,8 +288,8 @@ const BlogsApp = (mode, skin) => {
   addBlogsToDOM(store, blogsEle);
 
   // Load the TinyMCE editor
-  const editorSkin = store.skin === 'dark' ? 'oxide-dark' : 'oxide';
-  editor.load(store.mode, editorSkin).then((ed) => {
+  const editorSkin = store.data.skin === 'dark' ? 'oxide-dark' : 'oxide';
+  editor.load(store.data.mode, editorSkin).then((ed) => {
     // Bind to click events on the save button
     const saveElm = document.getElementById('save');
     saveElm.addEventListener('click', () => save(store, ed));
@@ -322,7 +322,7 @@ const BlogsApp = (mode, skin) => {
 
   return {
     addBlog: (title, content) => addBlog(store, title, content),
-    getBlogs: () => store.blogs.slice(0),
+    getBlogs: () => store.data.blogs.slice(0),
     deleteBlog: (index) => deleteBlog(store, index),
     on: store.eventDispatcher.on
   };

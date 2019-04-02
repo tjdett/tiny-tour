@@ -80,7 +80,12 @@ const Tour = (config) => {
   };
 
   const notify = (name) => {
-
+    if (hasNextStep(activeStepIndex)) {
+      const nextStep = config.steps[activeStepIndex + 1];
+      if (nextStep.waitForEvent === name) {
+        next();
+      }
+    }
   };
 
   return {
