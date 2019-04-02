@@ -1,4 +1,5 @@
 import * as editor from "./editor.js";
+import EventDispatcher from "EventDispatcher";
 
 /**
  * Creates a Edit, Delete, etc... action button for a single blog.
@@ -71,7 +72,7 @@ const createBlog = (store, title, content, index) => {
 };
 
 const updateStorage = (store) => {
-  window.localStorage.setItem('tiny-blogs', JSON.stringify(store));
+  window.localStorage.setItem('tiny-blogs', JSON.stringify(store.data));
 };
 
 const loadStorage = () => {
@@ -104,12 +105,14 @@ const addBlog = (store, title, content) => {
  * @param index The index of the blog to edit from the stores blog list.
  */
 const editBlog = (store, index) => {
-  if (editorScope) {
-    editor.populate(editorScope, store.blogs[index].body);
+  if (store.editor) {
+    editor.populate(store.editor, store.blogs[index].body);
     store.editing = true;
     store.editIndex = index;
     const titleEle = document.getElementById('blog-title');
     titleEle.value = store.blogs[index].title;
+
+    store.eventDispatcher.trigger('edit');
   }
 };
 
@@ -117,7 +120,7 @@ const confirmEdit = (store, title, content, index) => {
   store.blogs[index] = {title: title, body: content};
   updateStorage(store);
   renderBlogs(store);
-}
+};
 
 /**
  * Deletes a blog at the specified index.
@@ -136,7 +139,7 @@ const renderBlogs = (store) => {
   const blogsEle = document.querySelector('.blogApp .blogs');
   removeBlogsFromDOM(blogsEle);
   addBlogsToDOM(store, blogsEle);
-}
+};
 
 /**
  * Builds up the DOM representation for all blogs in the store and adds them
@@ -189,6 +192,8 @@ const save = (store, ed) => {
     // Reset the blog input/editor
     titleEle.value = null;
     editor.reset(ed);
+
+    store.eventDispatcher.trigger('save');
   }
 };
 
@@ -239,8 +244,6 @@ const buildInitialHtml = (store) => {
       </div>`;
 };
 
-let editorScope = undefined;
-
 /**
  * Initialize and setup the Tiny Blog application. This will find the element with the
  * `blogApp` id and initialize the application inside that element.
@@ -248,15 +251,18 @@ let editorScope = undefined;
  * @param mode The mode to load the blog editor in. [basic|full]
  * @param skin The skin to load the editor as. [default|dark]
  */
-const initApp = (mode, skin) => {
+const BlogsApp = (mode, skin) => {
   // Setup the blog app state/store
   const store = {
-    blogs: [],
-    skin: skin || 'default',
-    mode: mode || 'basic',
+    data: {
+      blogs: [],
+      skin: skin || 'default',
+      mode: mode || 'basic',
+      ...loadStorage()
+    },
     editing: false,
     editIndex: 0,
-    ...loadStorage(),
+    eventDispatcher: EventDispatcher()
   };
 
   // Setup the root element, by adding the 'blogApp' class to allow styling and
@@ -287,7 +293,7 @@ const initApp = (mode, skin) => {
     // Bind to click events on the save button
     const saveElm = document.getElementById('save');
     saveElm.addEventListener('click', () => save(store, ed));
-    editorScope = ed;
+    store.editor = ed;
 
     // Bind the radio button change events for the skin and mode
     const changeHandler = (name, e) => {
@@ -309,15 +315,19 @@ const initApp = (mode, skin) => {
     // adding a new blog entry
     const titleEle = document.getElementById('blog-title');
     titleEle.focus();
+
+    // Trigger that the app is initialized
+    store.eventDispatcher.trigger('init');
   });
 
   return {
     addBlog: (title, content) => addBlog(store, title, content),
     getBlogs: () => store.blogs.slice(0),
-    deleteBlog: (index) => deleteBlog(store, index)
+    deleteBlog: (index) => deleteBlog(store, index),
+    on: store.eventDispatcher.on
   };
 };
 
 export {
-  initApp
-}
+  BlogsApp
+};

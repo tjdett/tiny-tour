@@ -14,22 +14,13 @@
         import * as tour from "../src/js/index.js";
 
         const tourConfig = {
-          bind: {
-            '#save': {
-              helpUrl: './content/save.html'
-            }
-          },
-          help: {
-            '.tox-menubar': {
-              helpUrl: './content/menubar.html'
+          steps: [
+            {
+              helpUrl: './content/save.html',
+              waitForEvent: 'save'
             },
-            '.tox-toolbar': {
-              helpUrl: './content/toolbar.html'
-            },
-            '#save': {
-              helpUrl: './content/save.html'
-            }
-          }
+
+          ]
         };
 
         tour.init(tourConfig);
