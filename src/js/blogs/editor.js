@@ -10,9 +10,17 @@ const load = (mode) => {
   return tinymce.init({
     selector: '#editor',
     ...config
-  });
+  }).then((editors) => editors[0]);
+};
+
+const reset = (editor) => {
+  editor.setContent('');
+  editor.undoManager.clear();
+  editor.undoManager.add();
+  editor.setDirty(false);
 };
 
 export {
-  load
+  load,
+  reset
 }

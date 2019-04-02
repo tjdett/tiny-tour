@@ -4,60 +4,15 @@
     <meta charset="UTF-8">
     <title>Tiny Overlay</title>
     <link rel="stylesheet" href="css/demo.css" />
+    <link rel="stylesheet" href="../src/css/blog.css" />
     <script src="../node_modules/tinymce/tinymce.js"></script>
 </head>
 <body>
-    <div id="wrapper">
-        <div id="content">
-            <header>
-                <h1>Tiny Blogs</h1>
-            </header>
-            <div class="tour-form">
-                <div class="tour-form__group">
-                    <label class="tour-label">Title:</label>
-                    <input id="blog-title" type="text" class="tour-textfield" />
-                </div>
-                <div class="tour-form__group">
-                    <label class="tour-label">Content:</label>
-                    <textarea id="editor"></textarea>
-                </div>
-                <footer>
-                    <button id="save" class="tour-button tour-button__primary">Save</button>
-                    <button id="help" class="tour-button">Help</button>
-                </footer>
-            </div>
-        </div>
-        <div id="blogs">
-            <div class="blog">
-                <h2>Blog</h2>
-                <div>
-                    <p>Some content</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div id="blogApp"></div>
     <script type="module">
-        import * as tinyoverlay from "../src/js/overlay.js";
-        import * as helpers from "../src/js/helpers.js";
-        import * as blogs from "../src/js/blogs.js";
+        import * as tour from "../src/js/index.js";
 
-        helpers.load('basic').then((editors) => {
-          const editor = editors[0];
-          const save = document.getElementById('save');
-          save.addEventListener('click', function () {
-            const titleEle = document.getElementById('blog-title');
-            const newEle = blogs.createBlog(titleEle.value, editor.getContent());
-            document.getElementById('blogs').appendChild(newEle);
-
-            titleEle.value = null;
-            editor.setContent('');
-            editor.undoManager.clear();
-            editor.undoManager.add();
-            editor.setDirty(false);
-          });
-        });
-
-        const overlay = tinyoverlay.init({
+        const tourConfig = {
           bind: {
             '#save': {
               helpUrl: './content/save.html'
@@ -74,11 +29,9 @@
               helpUrl: './content/save.html'
             }
           }
-        });
+        };
 
-        overlay.bindActionOverlays();
-        const help = document.getElementById('help');
-        help.addEventListener('click', overlay.showHelpOverlays);
+        tour.init('basic', tourConfig);
     </script>
 </body>
 </html>
