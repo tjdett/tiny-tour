@@ -1,3 +1,4 @@
+import { Tour } from "./tour/tour.js";
 import { BlogsApp } from "./blogs/blogs.js";
 
 const init = (tourConfig, mode, skin) => {
@@ -8,6 +9,17 @@ const init = (tourConfig, mode, skin) => {
   if (blogApp.getBlogs().length === 0) {
     blogApp.addBlog('Test', 'Some content');
   }
+
+  // Initialize the tour
+  const tour = Tour(tourConfig);
+
+  blogApp.on('init', () => {
+    tour.start();
+  });
+
+  blogApp.on('save edit', (e) => {
+    tour.notify(e.type);
+  });
 };
 
 export {
