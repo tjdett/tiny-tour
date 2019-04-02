@@ -1,17 +1,5 @@
 import * as editor from "./editor.js";
 
-const editBlog = (index) => {
-  console.log('edit clicked', index);
-};
-
-const deleteBlog = (index) => {
-  store.blogs.splice(index, 1);
-  updateStorage();
-  const blogsEle = document.querySelector('.blogApp .blogs');
-  removeBlogsFromDOM(blogsEle);
-  addBlogsToDOM(blogsEle);
-};
-
 /**
  * Creates a Edit, Delete, etc... action button for a single blog
  */
@@ -26,7 +14,7 @@ const createButton = (name, btnClasses, iconClasses) => {
 /**
  * Creates the wrapper and all buttons for a single blog
  */
-const createBlogButtons = () => {
+const createBlogButtons = (store) => {
   // Create a wrapper to hold the buttons
   const buttonsEle = document.createElement('div');
   buttonsEle.className = 'blog-buttons';
@@ -37,8 +25,8 @@ const createBlogButtons = () => {
 
   // Wire up the button actions
   const index = store.blogs.length - 1;
-  editButton.addEventListener('click', () => editBlog(index));
-  deleteButton.addEventListener('click', () => deleteBlog(index));
+  editButton.addEventListener('click', () => editBlog(store, index));
+  deleteButton.addEventListener('click', () => deleteBlog(store, index));
 
   // Add the buttons to the wrapper
   buttonsEle.appendChild(editButton);
@@ -50,10 +38,11 @@ const createBlogButtons = () => {
 /**
  * Creates a blog entry and returns the built HTML for the title, content and action buttons
  *
+ * @param store The datastore for the blog details
  * @param title The title of the blog entry
  * @param content The HTML content of the blog entry
  */
-const createBlog = (title, content) => {
+const createBlog = (store, title, content) => {
   // Create the wrapper element to hold all the blog details
   const blogEle = document.createElement('div');
   blogEle.classList.add('blog');
@@ -71,7 +60,7 @@ const createBlog = (title, content) => {
   contentEle.innerHTML = content;
 
   // Create the blog buttons
-  const buttonsEle = createBlogButtons();
+  const buttonsEle = createBlogButtons(store);
 
   // Add all the newly created elements to dom
   innerEle.appendChild(header);
@@ -82,34 +71,49 @@ const createBlog = (title, content) => {
   return blogEle;
 };
 
-let store = {
-  blogs: [],
-  wizardState: {
-    step: 0
-  },
+const updateStorage = (store) => {
+  window.localStorage.setItem('tiny-blogs', JSON.stringify(store));
 };
 
-const updateStorage = () => {
-  window.localStorage.setItem('blogs', JSON.stringify(store.blogs));
+const loadStorage = () => {
+  try {
+    return JSON.parse(window.localStorage.getItem('tiny-blogs') || '{}');
+  } catch (e) {
+    console.error(e);
+    return {};
+  }
 };
 
 /**
  * Adds a new blog.
  *
+ * @param store The datastore for the blog details
  * @param title The title of the blog entry
  * @param content The HTML content of the blog entry
  */
-const addBlog = (title, content) => {
+const addBlog = (store, title, content) => {
   store.blogs.push({title: title, body: content});
-  updateStorage();
+  updateStorage(store);
   const blogsEle = document.querySelector('.blogApp .blogs');
   removeBlogsFromDOM(blogsEle);
-  addBlogsToDOM(blogsEle);
+  addBlogsToDOM(store, blogsEle);
 };
 
-const addBlogsToDOM = (dom) => {
+const editBlog = (store, index) => {
+  console.log('edit clicked', index);
+};
+
+const deleteBlog = (store, index) => {
+  store.blogs.splice(index, 1);
+  updateStorage(store);
+  const blogsEle = document.querySelector('.blogApp .blogs');
+  removeBlogsFromDOM(blogsEle);
+  addBlogsToDOM(store, blogsEle);
+};
+
+const addBlogsToDOM = (store, dom) => {
   store.blogs.forEach((blog) => {
-    const blogEle = createBlog(blog.title, blog.body);
+    const blogEle = createBlog(store, blog.title, blog.body);
     dom.appendChild(blogEle);
   });
 };
@@ -120,7 +124,7 @@ const removeBlogsFromDOM = (dom) => {
   }
 };
 
-const save = (ed) => {
+const save = (store, ed) => {
   // Get the blog title element
   const titleEle = document.getElementById('blog-title');
 
@@ -130,7 +134,7 @@ const save = (ed) => {
 
   // Create the blog and add it to the blogs list
   if (title.length > 0 && content.length > 0) {
-    addBlog(title, content);
+    addBlog(store, title, content);
 
     // Reset the blog input/editor
     titleEle.value = null;
@@ -145,7 +149,7 @@ const bindToggleChange = (name, changeHandler) => {
   })
 };
 
-const buildInitialHtml = (mode, skin) => {
+const buildInitialHtml = (store) => {
   return `<div class="content">
           <header>
               <h1>Tiny Blogs</h1>
@@ -165,13 +169,13 @@ const buildInitialHtml = (mode, skin) => {
                   <div>
                     <div class="blog-button-group">
                         <label>Skin:</label>
-                        <input type="radio" name="skin" value="oxide" ${skin === 'oxide' ? 'checked' : ''}> Default
-                        <input type="radio" name="skin" value="oxide-dark" ${skin === 'oxide-dark' ? 'checked' : ''}> Dark
+                        <input type="radio" name="skin" value="oxide" ${store.skin === 'oxide' ? 'checked' : ''}> Default
+                        <input type="radio" name="skin" value="oxide-dark" ${store.skin === 'oxide-dark' ? 'checked' : ''}> Dark
                     </div>
                     <div class="blog-button-group">
                         <label>Mode:</label>
-                        <input type="radio" name="mode" value="basic" ${mode === 'basic' ? 'checked' : ''}> Basic
-                        <input type="radio" name="mode" value="full" ${mode === 'full' ? 'checked' : ''}> Full
+                        <input type="radio" name="mode" value="basic" ${store.mode === 'basic' ? 'checked' : ''}> Basic
+                        <input type="radio" name="mode" value="full" ${store.mode === 'full' ? 'checked' : ''}> Full
                     </div>
                   </div>
               </footer>
@@ -180,6 +184,15 @@ const buildInitialHtml = (mode, skin) => {
 };
 
 const initApp = (mode, skin) => {
+  // Setup the blog app state/store
+  const store = {
+    blogs: [],
+    skin: skin || 'oxide',
+    mode: mode || 'basic',
+    ...loadStorage(),
+  };
+
+  // Setup the root element
   const blogAppEle = document.getElementById('blogApp');
   blogAppEle.classList.add('blogApp');
   blogAppEle.style.visibility = 'hidden';
@@ -190,27 +203,28 @@ const initApp = (mode, skin) => {
   }
 
   // Create the editor content
-  blogAppEle.innerHTML = buildInitialHtml(mode, skin);
+  blogAppEle.innerHTML = buildInitialHtml(store);
 
   // Add the blogs container
   const blogsEle = document.createElement('div');
   blogsEle.classList.add('blogs');
   blogAppEle.appendChild(blogsEle);
 
-  const storage = window.localStorage;
+  // Load any previously saved blogs
+  addBlogsToDOM(store, blogsEle);
 
   // Load the editor
   editor.load(mode, skin).then((ed) => {
     // Bind to click events on the save button
     const saveElm = document.getElementById('save');
-    saveElm.addEventListener('click', () => save(ed));
+    saveElm.addEventListener('click', () => save(store, ed));
 
     // Bind to the radio button change events for the skin and mode
     const changeHandler = (name, e) => {
       if (e.target.checked) {
         blogAppEle.style.visibility = 'hidden';
         ed.remove();
-        storage.setItem('tiny-blog.' + name, e.target.value);
+        updateStorage(store);
         window.location.reload();
       }
     };
@@ -226,11 +240,12 @@ const initApp = (mode, skin) => {
   titleEle.focus();
 
   return {
-    addBlog
+    addBlog: (title, content) => addBlog(store, title, content),
+    getBlogs: () => store.blogs.slice(0),
+    deleteBlog: (index) => deleteBlog(store, index)
   };
 };
 
 export {
-  initApp,
-  store
+  initApp
 }
