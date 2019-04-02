@@ -8,11 +8,21 @@
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
 }
 
+.blogApp .content {
+    padding: 10px;
+    width: 70%;
+}
+
 .blogApp .blogs {
-    width: 25%;
+    width: 30%;
     box-sizing: border-box;
     border-left: 1px solid #ccc;;
     height: 100%;
+}
+
+.blogApp header, .blogApp footer {
+    display: flex;
+    justify-content: space-between;
 }
 
 .blogApp .blog {
@@ -21,19 +31,17 @@
     display: flex;
 }
 
-#blogApp .blog .inner {
-    flex-basis: 65%;
+.blogApp .blog .inner {
+    flex-grow: 1;
     flex-direction: column;
 }
 
-.blogApp footer {
-    display: flex;
-    justify-content: space-between;
+.blogApp .blog .blog-buttons > button {
+    margin-left: 4px;
 }
 
-.blogApp .content {
-    padding: 10px;
-    width: 75%;
+.blogApp .blog button i.far {
+    min-width: 16px;
 }
 
 .blogApp .blog-form__group {

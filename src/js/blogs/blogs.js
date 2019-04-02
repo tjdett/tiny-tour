@@ -29,12 +29,14 @@ const createBlog = (title, content) => {
   const buttonsEle = document.createElement('div');
   const editButton = document.createElement('button');
   editButton.className = 'blog-button blog-button__primary';
-  editButton.innerHTML = 'Edit';
+  editButton.title = 'Edit';
+  editButton.innerHTML = '<i class="far fa-edit"></i>';
   editButton.addEventListener('click', () => editBlog(index));
 
   const deleteButton = document.createElement('button');
   deleteButton.className = 'blog-button blog-button__error';
-  deleteButton.innerHTML = 'Delete';
+  deleteButton.title = 'Delete';
+  deleteButton.innerHTML = '<i class="far fa-trash-alt"></i>';
   deleteButton.addEventListener('click', () => deleteBlog(index));
 
   buttonsEle.appendChild(editButton);
@@ -101,13 +103,22 @@ const initApp = (mode) => {
 
   // Create the editor content
   blogAppEle.innerHTML = `<div class="content">
-      <header>
-          <h1>Tiny Blogs</h1>
-      </header>
-      <div class="blog-form">
-          <div class="blog-form__group">
-              <label class="blog-label">Title:</label>
-              <input id="blog-title" type="text" class="blog-textfield" />
+          <header>
+              <h1>Tiny Blogs</h1>
+              <div><button id="help" class="blog-button" title="Help"><i class="far fa-question-circle"></i></button></div>
+          </header>
+          <div class="blog-form">
+              <div class="blog-form__group">
+                  <label class="blog-label">Title:</label>
+                  <input id="blog-title" type="text" class="blog-textfield" />
+              </div>
+              <div class="blog-form__group">
+                  <label class="blog-label">Content:</label>
+                  <textarea id="editor"></textarea>
+              </div>
+              <footer>
+                  <button id="save" class="blog-button blog-button__primary">Save</button>
+              </footer>
           </div>
           <div class="blog-form__group">
               <label class="blog-label">Content:</label>
@@ -129,7 +140,7 @@ const initApp = (mode) => {
 
   // Load the editor
   editor.load(mode).then((ed) => {
-    // Register the save click event
+    // Bind to click events on the save button
     const saveElm = document.getElementById('save');
     saveElm.addEventListener('click', () => save(ed));
   });
