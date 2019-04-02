@@ -198,7 +198,7 @@ const initApp = (mode, skin) => {
   blogAppEle.style.visibility = 'hidden';
 
   // Add the dark class if we're running in dark mode
-  if (skin === 'oxide-dark') {
+  if (store.skin === 'oxide-dark') {
     blogAppEle.classList.add('dark');
   }
 
@@ -214,7 +214,7 @@ const initApp = (mode, skin) => {
   addBlogsToDOM(store, blogsEle);
 
   // Load the editor
-  editor.load(mode, skin).then((ed) => {
+  editor.load(store.mode, store.skin).then((ed) => {
     // Bind to click events on the save button
     const saveElm = document.getElementById('save');
     saveElm.addEventListener('click', () => save(store, ed));
@@ -224,6 +224,7 @@ const initApp = (mode, skin) => {
       if (e.target.checked) {
         blogAppEle.style.visibility = 'hidden';
         ed.remove();
+        store[name] = e.target.value;
         updateStorage(store);
         window.location.reload();
       }
