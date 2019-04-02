@@ -145,26 +145,6 @@ const bindToggleChange = (name, changeHandler) => {
   })
 };
 
-const loadEditor = (mode, skin) => {
-  // Load the editor
-  editor.load(mode, skin).then((ed) => {
-    // Bind to click events on the save button
-    const saveElm = document.getElementById('save');
-    saveElm.addEventListener('click', () => save(ed));
-
-    // Bind to the radio button change events for the skin and mode
-    const changeHandler = (name, e) => {
-      if (e.target.checked) {
-        ed.remove();
-        window.localStorage.setItem('tiny-blog.' + name, e.target.value);
-        window.location.reload();
-      }
-    };
-    bindToggleChange('skin', changeHandler);
-    bindToggleChange('mode', changeHandler);
-  });
-};
-
 const buildInitialHtml = (mode, skin) => {
   return `<div class="content">
           <header>
@@ -202,6 +182,7 @@ const buildInitialHtml = (mode, skin) => {
 const initApp = (mode, skin) => {
   const blogAppEle = document.getElementById('blogApp');
   blogAppEle.classList.add('blogApp');
+  blogAppEle.style.visibility = 'hidden';
 
   // Add the dark class if we're running in dark mode
   if (skin === 'oxide-dark') {
@@ -219,7 +200,26 @@ const initApp = (mode, skin) => {
   const storage = window.localStorage;
 
   // Load the editor
-  loadEditor(mode, skin);
+  editor.load(mode, skin).then((ed) => {
+    // Bind to click events on the save button
+    const saveElm = document.getElementById('save');
+    saveElm.addEventListener('click', () => save(ed));
+
+    // Bind to the radio button change events for the skin and mode
+    const changeHandler = (name, e) => {
+      if (e.target.checked) {
+        blogAppEle.style.visibility = 'hidden';
+        ed.remove();
+        storage.setItem('tiny-blog.' + name, e.target.value);
+        window.location.reload();
+      }
+    };
+    bindToggleChange('skin', changeHandler);
+    bindToggleChange('mode', changeHandler);
+
+    // Make the app visible
+    blogAppEle.style.visibility = 'visible';
+  });
 
   // Get the blog title element and focus it
   const titleEle = document.getElementById('blog-title');
