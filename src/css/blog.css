@@ -25,6 +25,25 @@
     justify-content: space-between;
 }
 
+/* START DARK MODE */
+
+.blogApp.dark {
+    background-color: #222f3e;
+    color: #fff;
+}
+
+.blogApp.dark .blog-label {
+    color: rgba(255,255,255,.5);
+}
+
+.blogApp.dark .blog-button {
+    background-color: #3d546f;
+    border-color: #3d546f;
+    color: #fff;
+}
+
+/* END DARK MODE */
+
 .blogApp .blog {
     padding: 10px;
     border-bottom: 1px solid #ccc;
@@ -73,13 +92,13 @@
     padding: 4px 16px;
 }
 
-.blogApp .blog-button__primary {
+.blogApp .blog-button.blog-button__primary {
     background-color: #3498db;
     border: 1px solid #3498db;
     color: white;
 }
 
-.blogApp .blog-button__error {
+.blogApp .blog-button.blog-button__error {
     background-color: #d80606;
     border: 1px solid #d80606;
     color: white;

@@ -7,6 +7,7 @@ const fullConfig = {
 };
 
 const load = (mode, skin) => {
+  console.log(skin);
   const config = mode === 'full' ? fullConfig: basicConfig;
   return tinymce.init({
     ...config,

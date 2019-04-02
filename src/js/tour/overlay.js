@@ -10,6 +10,7 @@ const buildBlockerClose = (cb) => {
   close.style.padding = '5px 8px';
   close.style.borderRadius = '3px';
   close.style.backgroundColor = '#fff';
+  close.style.cursor = 'pointer';
   return close;
 };
 
@@ -19,7 +20,7 @@ const overlayElement = (element, zIndex) => {
   }
   element.style.backgroundColor = getBackgroundColor(element);
   element.style.zIndex = zIndex;
-  element.style.border = '1px solid blue'
+  element.style.border = '1px solid blue';
 };
 
 const restoreElement = (element) => {
@@ -169,7 +170,7 @@ const init = (config, zIndex) => {
 
   const buildRoot = () => {
     const root = document.createElement('div');
-    root.style.backgroundColor = 'rgba(0, 0, 0, 0.6)';
+    root.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
     root.style.position = 'fixed';
     root.style.left = '0';
     root.style.right = '0';
