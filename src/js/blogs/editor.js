@@ -23,7 +23,14 @@ const reset = (editor) => {
   editor.setDirty(false);
 };
 
+const populate = (editor, content) => {
+  editor.setContent(content);
+  editor.undoManager.add();
+  editor.setDirty(true);
+}
+
 export {
   load,
-  reset
+  reset,
+  populate
 }

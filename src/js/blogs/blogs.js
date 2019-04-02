@@ -14,7 +14,7 @@ const createButton = (name, btnClasses, iconClasses) => {
 /**
  * Creates the wrapper and all buttons for a single blog
  */
-const createBlogButtons = (store) => {
+const createBlogButtons = (store, index) => {
   // Create a wrapper to hold the buttons
   const buttonsEle = document.createElement('div');
   buttonsEle.className = 'blog-buttons';
@@ -24,7 +24,6 @@ const createBlogButtons = (store) => {
   const deleteButton = createButton('Delete', 'blog-button__error', 'far fa-trash-alt');
 
   // Wire up the button actions
-  const index = store.blogs.length - 1;
   editButton.addEventListener('click', () => editBlog(store, index));
   deleteButton.addEventListener('click', () => deleteBlog(store, index));
 
@@ -42,7 +41,7 @@ const createBlogButtons = (store) => {
  * @param title The title of the blog entry
  * @param content The HTML content of the blog entry
  */
-const createBlog = (store, title, content) => {
+const createBlog = (store, title, content, index) => {
   // Create the wrapper element to hold all the blog details
   const blogEle = document.createElement('div');
   blogEle.classList.add('blog');
@@ -60,7 +59,7 @@ const createBlog = (store, title, content) => {
   contentEle.innerHTML = content;
 
   // Create the blog buttons
-  const buttonsEle = createBlogButtons(store);
+  const buttonsEle = createBlogButtons(store, index);
 
   // Add all the newly created elements to dom
   innerEle.appendChild(header);
@@ -94,26 +93,41 @@ const loadStorage = () => {
 const addBlog = (store, title, content) => {
   store.blogs.push({title: title, body: content});
   updateStorage(store);
-  const blogsEle = document.querySelector('.blogApp .blogs');
-  removeBlogsFromDOM(blogsEle);
-  addBlogsToDOM(store, blogsEle);
+  renderBlogs(store);
 };
 
 const editBlog = (store, index) => {
-  console.log('edit clicked', index);
+  if (editorScope) {
+    editor.populate(editorScope, store.blogs[index].body);
+    store.editing = true;
+    store.editIndex = index;
+    const titleEle = document.getElementById('blog-title');
+    titleEle.value = store.blogs[index].title;
+  }
 };
+
+const confirmEdit = (store, title, content, index) => {
+  store.blogs[index] = {title: title, body: content};
+  updateStorage(store);
+  renderBlogs(store);
+}
 
 const deleteBlog = (store, index) => {
   store.blogs.splice(index, 1);
   updateStorage(store);
+  renderBlogs(store);
+};
+
+// Re-populate blogs list following add/edit/remove
+const renderBlogs = (store) => {
   const blogsEle = document.querySelector('.blogApp .blogs');
   removeBlogsFromDOM(blogsEle);
   addBlogsToDOM(store, blogsEle);
-};
+}
 
 const addBlogsToDOM = (store, dom) => {
-  store.blogs.forEach((blog) => {
-    const blogEle = createBlog(store, blog.title, blog.body);
+  store.blogs.forEach((blog, index) => {
+    const blogEle = createBlog(store, blog.title, blog.body, index);
     dom.appendChild(blogEle);
   });
 };
@@ -134,8 +148,13 @@ const save = (store, ed) => {
 
   // Create the blog and add it to the blogs list
   if (title.length > 0 && content.length > 0) {
-    addBlog(store, title, content);
-
+    if (store.editing) {
+      confirmEdit(store, title, content, store.editIndex);
+    } else {
+      addBlog(store, title, content);
+    }
+    store.editing = false;
+    store.editIndex = 0;
     // Reset the blog input/editor
     titleEle.value = null;
     editor.reset(ed);
@@ -183,12 +202,16 @@ const buildInitialHtml = (store) => {
       </div>`;
 };
 
+let editorScope = undefined;
+
 const initApp = (mode, skin) => {
   // Setup the blog app state/store
   const store = {
     blogs: [],
     skin: skin || 'oxide',
     mode: mode || 'basic',
+    editing: false,
+    editIndex: 0,
     ...loadStorage(),
   };
 
@@ -218,7 +241,7 @@ const initApp = (mode, skin) => {
     // Bind to click events on the save button
     const saveElm = document.getElementById('save');
     saveElm.addEventListener('click', () => save(store, ed));
-
+    editorScope = ed;
     // Bind to the radio button change events for the skin and mode
     const changeHandler = (name, e) => {
       if (e.target.checked) {
