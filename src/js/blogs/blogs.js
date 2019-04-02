@@ -300,7 +300,7 @@ const BlogsApp = (mode, skin) => {
       if (e.target.checked) {
         blogAppEle.style.visibility = 'hidden';
         ed.remove();
-        store[name] = e.target.value;
+        store.data[name] = e.target.value;
         updateStorage(store);
         window.location.reload();
       }
@@ -324,7 +324,7 @@ const BlogsApp = (mode, skin) => {
     addBlog: (title, content) => addBlog(store, title, content),
     getBlogs: () => store.data.blogs.slice(0),
     deleteBlog: (index) => deleteBlog(store, index),
-    on: store.eventDispatcher.on
+    on: (name, cb) => store.eventDispatcher.on(name, cb)
   };
 };
 
