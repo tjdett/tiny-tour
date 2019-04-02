@@ -1,0 +1,19 @@
+{
+  "name": "tiny-overlay",
+  "version": "1.0.0",
+  "description": "Overlay for adding help content to TinyMCE",
+  "main": "lib/overlay.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "tinymce": "^5.0.3",
+    "tslint": "^5.14.0",
+    "typescript": "^3.4.1"
+  },
+  "dependencies": {
+    "tslib": "^1.9.3"
+  }
+}

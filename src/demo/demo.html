@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tiny Overlay</title>
+    <script src="../../node_modules/tinymce/tinymce.js"></script>
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        #wrapper {
+            float: left;
+            width: 75%;
+            padding-right: 10px;
+            box-sizing: border-box;
+        }
+
+        #content input {
+            margin-bottom: 10px;
+            width: calc(100% - 7px);
+        }
+
+        #blogs {
+            float: right;
+            width: 25%;
+            padding: 10px;
+            box-sizing: border-box;
+            border-left: 1px solid gray;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <header>
+            <h1>Tiny Blogs</h1>
+        </header>
+        <div id="content">
+            <label>
+                Title:
+                <input id="blog-title" type="text" />
+            </label>
+            <label>
+                Content:
+            </label>
+            <textarea id="editor"></textarea>
+        </div>
+        <div style="padding-top: 10px">
+            <button id="save">Save</button>
+            <button id="help" style="float: right">Help</button>
+        </div>
+    </div>
+    <div id="blogs">
+        <div>Blogs:</div>
+    </div>
+    <script>
+      tinymce.init({
+        selector: '#editor',
+        setup: function (editor) {
+          var save = document.getElementById('save');
+          save.addEventListener('click', function () {
+            var titleEle = document.getElementById('blog-title');
+
+            var newEle = document.createElement('div');
+            var header = document.createElement('h2');
+            header.innerText = titleEle.value;
+
+            var wrapper = document.createElement('div');
+            wrapper.innerHTML = editor.getContent();
+
+            newEle.appendChild(header);
+            newEle.appendChild(wrapper);
+            document.getElementById('blogs').appendChild(newEle);
+
+            titleEle.value = null;
+            editor.setContent('');
+            editor.undoManager.clear();
+            editor.undoManager.add();
+            editor.setDirty(false);
+          });
+        }
+      });
+    </script>
+    <script type="module">
+        import * as tinyoverlay from "../../lib/overlay.js";
+
+        const overlay = tinyoverlay.init({
+          bind: {
+            '#save': {
+              helpUrl: './content/save.html'
+            }
+          },
+          help: {
+            '.tox-menubar': {
+              helpUrl: './content/menubar.html'
+            },
+            '.tox-toolbar': {
+              helpUrl: './content/toolbar.html'
+            },
+            '#save': {
+              helpUrl: './content/save.html'
+            }
+          }
+        });
+
+        overlay.bindActionOverlays();
+        const help = document.getElementById('help');
+        help.addEventListener('click', overlay.showHelpOverlays);
+    </script>
+</body>
+</html>
