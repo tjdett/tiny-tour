@@ -1,7 +1,7 @@
 import * as editor from "./editor.js";
 
 /**
- * Creates a Edit, Delete, etc... action button for a single blog
+ * Creates a Edit, Delete, etc... action button for a single blog.
  */
 const createButton = (name, btnClasses, iconClasses) => {
   const editButton = document.createElement('button');
@@ -12,7 +12,7 @@ const createButton = (name, btnClasses, iconClasses) => {
 };
 
 /**
- * Creates the wrapper and all buttons for a single blog
+ * Creates the wrapper and all buttons for a single blog.
  */
 const createBlogButtons = (store) => {
   // Create a wrapper to hold the buttons
@@ -36,11 +36,11 @@ const createBlogButtons = (store) => {
 };
 
 /**
- * Creates a blog entry and returns the built HTML for the title, content and action buttons
+ * Creates a blog entry and returns the built HTML for the title, content and action buttons.
  *
- * @param store The datastore for the blog details
- * @param title The title of the blog entry
- * @param content The HTML content of the blog entry
+ * @param store The datastore for the blog details.
+ * @param title The title of the blog entry.
+ * @param content The HTML content of the blog entry.
  */
 const createBlog = (store, title, content) => {
   // Create the wrapper element to hold all the blog details
@@ -87,9 +87,9 @@ const loadStorage = () => {
 /**
  * Adds a new blog.
  *
- * @param store The datastore for the blog details
- * @param title The title of the blog entry
- * @param content The HTML content of the blog entry
+ * @param store The datastore for the blog details.
+ * @param title The title of the blog entry.
+ * @param content The HTML content of the blog entry.
  */
 const addBlog = (store, title, content) => {
   store.blogs.push({title: title, body: content});
@@ -99,10 +99,23 @@ const addBlog = (store, title, content) => {
   addBlogsToDOM(store, blogsEle);
 };
 
+/**
+ * Loads a blog entry content/title back into the editable area so that it can
+ * be updated.
+ *
+ * @param store The datastore for the blog details.
+ * @param index The index of the blog to edit from the stores blog list.
+ */
 const editBlog = (store, index) => {
   console.log('edit clicked', index);
 };
 
+/**
+ * Deletes a blog at the specified index.
+ *
+ * @param store The datastore for the blog details.
+ * @param index The index of the blog to delete from the stores blog list.
+ */
 const deleteBlog = (store, index) => {
   store.blogs.splice(index, 1);
   updateStorage(store);
@@ -111,6 +124,13 @@ const deleteBlog = (store, index) => {
   addBlogsToDOM(store, blogsEle);
 };
 
+/**
+ * Builds up the DOM representation for all blogs in the store and adds them
+ * to the blogs DOM list.
+ *
+ * @param store The datastore for the blog details
+ * @param dom The DOM element to add all the created blogs to
+ */
 const addBlogsToDOM = (store, dom) => {
   store.blogs.forEach((blog) => {
     const blogEle = createBlog(store, blog.title, blog.body);
@@ -118,12 +138,23 @@ const addBlogsToDOM = (store, dom) => {
   });
 };
 
+/**
+ * Remove all blogs from the blogs DOM element/list.
+ *
+ * @param dom The DOM element to remove all the blogs from.
+ */
 const removeBlogsFromDOM = (dom) => {
   while (dom.hasChildNodes()) {
     dom.removeChild(dom.lastChild);
   }
 };
 
+/**
+ * Saves or updates a new blog entry.
+ *
+ * @param store The datastore for the blog details.
+ * @param ed The current TinyMCE editor instance, that contains the blog contents.
+ */
 const save = (store, ed) => {
   // Get the blog title element
   const titleEle = document.getElementById('blog-title');
@@ -149,6 +180,12 @@ const bindToggleChange = (name, changeHandler) => {
   })
 };
 
+/**
+ * Build up the initial HTML for the application.
+ *
+ * @param store The datastore for the blog details
+ * @returns {string} The core application HTML.
+ */
 const buildInitialHtml = (store) => {
   return `<div class="content">
           <header>
@@ -169,8 +206,8 @@ const buildInitialHtml = (store) => {
                   <div>
                     <div class="blog-button-group">
                         <label>Skin:</label>
-                        <input type="radio" name="skin" value="oxide" ${store.skin === 'oxide' ? 'checked' : ''}> Default
-                        <input type="radio" name="skin" value="oxide-dark" ${store.skin === 'oxide-dark' ? 'checked' : ''}> Dark
+                        <input type="radio" name="skin" value="default" ${store.skin === 'default' ? 'checked' : ''}> Default
+                        <input type="radio" name="skin" value="dark" ${store.skin === 'dark' ? 'checked' : ''}> Dark
                     </div>
                     <div class="blog-button-group">
                         <label>Mode:</label>
@@ -183,26 +220,34 @@ const buildInitialHtml = (store) => {
       </div>`;
 };
 
+/**
+ * Initialize and setup the Tiny Blog application. This will find the element with the
+ * `blogApp` id and initialize the application inside that element.
+ *
+ * @param mode The mode to load the blog editor in. [basic|full]
+ * @param skin The skin to load the editor as. [default|dark]
+ */
 const initApp = (mode, skin) => {
   // Setup the blog app state/store
   const store = {
     blogs: [],
-    skin: skin || 'oxide',
+    skin: skin || 'default',
     mode: mode || 'basic',
     ...loadStorage(),
   };
 
-  // Setup the root element
+  // Setup the root element, by adding the 'blogApp' class to allow styling and
+  // set the app as hidden for now until loading completes
   const blogAppEle = document.getElementById('blogApp');
   blogAppEle.classList.add('blogApp');
   blogAppEle.style.visibility = 'hidden';
 
   // Add the dark class if we're running in dark mode
-  if (store.skin === 'oxide-dark') {
+  if (store.skin === 'dark') {
     blogAppEle.classList.add('dark');
   }
 
-  // Create the editor content
+  // Create the app content/HTML
   blogAppEle.innerHTML = buildInitialHtml(store);
 
   // Add the blogs container
@@ -213,13 +258,14 @@ const initApp = (mode, skin) => {
   // Load any previously saved blogs
   addBlogsToDOM(store, blogsEle);
 
-  // Load the editor
-  editor.load(store.mode, store.skin).then((ed) => {
+  // Load the TinyMCE editor
+  const editorSkin = store.skin === 'dark' ? 'oxide-dark' : 'oxide';
+  editor.load(store.mode, editorSkin).then((ed) => {
     // Bind to click events on the save button
     const saveElm = document.getElementById('save');
     saveElm.addEventListener('click', () => save(store, ed));
 
-    // Bind to the radio button change events for the skin and mode
+    // Bind the radio button change events for the skin and mode
     const changeHandler = (name, e) => {
       if (e.target.checked) {
         blogAppEle.style.visibility = 'hidden';
@@ -232,13 +278,14 @@ const initApp = (mode, skin) => {
     bindToggleChange('skin', changeHandler);
     bindToggleChange('mode', changeHandler);
 
-    // Make the app visible
+    // The app is fully loaded now, so make it visible
     blogAppEle.style.visibility = 'visible';
-  });
 
-  // Get the blog title element and focus it
-  const titleEle = document.getElementById('blog-title');
-  titleEle.focus();
+    // Get the blog title element and focus it to make it easier to get started
+    // adding a new blog entry
+    const titleEle = document.getElementById('blog-title');
+    titleEle.focus();
+  });
 
   return {
     addBlog: (title, content) => addBlog(store, title, content),
