@@ -110,3 +110,7 @@
     border: 1px solid #d80606;
     color: white;
 }
+
+.blogApp .blog-error {
+    border: 1px solid #d80606;
+}

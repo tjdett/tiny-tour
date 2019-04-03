@@ -173,8 +173,9 @@ const removeBlogsFromDOM = (dom) => {
  * @param ed The current TinyMCE editor instance, that contains the blog contents.
  */
 const save = (store, ed) => {
-  // Get the blog title element
-  const titleEle = document.getElementById('blog-title');
+  // Get the blog title/editor element
+  const titleEle = document.querySelector('.blogApp .blog-title');
+  const editorEle = document.querySelector('.blogApp .blog-content');
 
   // Get the data
   const title = titleEle.value;
@@ -194,6 +195,21 @@ const save = (store, ed) => {
     editor.reset(ed);
 
     store.eventDispatcher.trigger('save');
+  } else {
+    if (title.length === 0) {
+      titleEle.classList.add('blog-error');
+      const changeHandler = () => {
+        titleEle.classList.remove('blog-error');
+        titleEle.removeEventListener('change', changeHandler);
+      };
+      titleEle.addEventListener('change', changeHandler);
+    }
+    if (content.length === 0) {
+      editorEle.classList.add('blog-error');
+      ed.once('change', () => {
+        editorEle.classList.remove('blog-error');
+      });
+    }
   }
 };
 
@@ -219,11 +235,13 @@ const buildInitialHtml = (store) => {
           <div class="blog-form">
               <div class="blog-form__group">
                   <label class="blog-label">Title:</label>
-                  <input id="blog-title" type="text" class="blog-textfield" />
+                  <input type="text" class="blog-title blog-textfield" />
               </div>
               <div class="blog-form__group">
                   <label class="blog-label">Content:</label>
-                  <textarea id="editor"></textarea>
+                  <div class="blog-content">
+                    <textarea id="editor"></textarea>
+                  </div>
               </div>
               <footer>
                   <button id="save" class="blog-button blog-button__primary">Save</button>
@@ -314,7 +332,7 @@ const BlogsApp = (mode, skin) => {
 
     // Get the blog title element and focus it to make it easier to get started
     // adding a new blog entry
-    const titleEle = document.getElementById('blog-title');
+    const titleEle = document.querySelector('.blogApp .blog-title');
     titleEle.focus();
 
     // Trigger that the app is initialized
