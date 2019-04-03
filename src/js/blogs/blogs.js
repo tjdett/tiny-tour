@@ -73,18 +73,21 @@ const createBlog = (store, title, content, index) => {
 };
 
 const updateStorage = (store) => {
-  window.localStorage.setItem('tiny-blogs', JSON.stringify(store.data));
-  // postData(`/articles/`, { title: title, content: content })
-  //   .then(data => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
-  //   .catch(error => console.error(error));
-
-    // + store.data.blogs[store.data.blo]
-
+  window.localStorage.setItem('tiny-blogs', JSON.stringify(store.settings));
 };
 
-const loadStorage = async (mode, skin) => {
+const loadStorage = () => {
+  try {
+    return JSON.parse(window.localStorage.getItem('tiny-blogs') || '{}');
+  } catch (e) {
+    console.error(e);
+    return {};
+  }
+};
+
+const loadBlobs = async (mode, skin) => {
 // async function loadStorage(mode, skin) {
-  console.log('Load storage');
+  console.log('Load blobs');
 
   const fetched = await fetch('/articles/')
     .then(function(response) {
@@ -99,13 +102,6 @@ const loadStorage = async (mode, skin) => {
     });
 
   return fetched;
-    
-  // try {
-  //   return JSON.parse(window.localStorage.getItem('tiny-blogs') || '{}');
-  // } catch (e) {
-  //   console.error(e);
-  //   return {};
-  // }
 };
 
 /**
@@ -139,7 +135,7 @@ const postData = (url, blog, method = "POST") => {
     body: JSON.stringify(blog),
   })
   .then(response => response.json());
-}
+};
 
 /**
  * Loads a blog entry content/title back into the editable area so that it can
@@ -309,13 +305,13 @@ const buildInitialHtml = (store) => {
                   <div>
                     <div class="blog-button-group">
                         <label>Skin:</label>
-                        <input type="radio" name="skin" value="default" ${store.data.skin === 'default' ? 'checked' : ''}> Default
-                        <input type="radio" name="skin" value="dark" ${store.data.skin === 'dark' ? 'checked' : ''}> Dark
+                        <input type="radio" name="skin" value="default" ${store.settings.skin === 'default' ? 'checked' : ''}> Default
+                        <input type="radio" name="skin" value="dark" ${store.settings.skin === 'dark' ? 'checked' : ''}> Dark
                     </div>
                     <div class="blog-button-group">
                         <label>Mode:</label>
-                        <input type="radio" name="mode" value="basic" ${store.data.mode === 'basic' ? 'checked' : ''}> Basic
-                        <input type="radio" name="mode" value="full" ${store.data.mode === 'full' ? 'checked' : ''}> Full
+                        <input type="radio" name="mode" value="basic" ${store.settings.mode === 'basic' ? 'checked' : ''}> Basic
+                        <input type="radio" name="mode" value="full" ${store.settings.mode === 'full' ? 'checked' : ''}> Full
                     </div>
                   </div>
               </footer>
@@ -331,14 +327,17 @@ const buildInitialHtml = (store) => {
  * @param skin The skin to load the editor as. [default|dark]
  */
 const BlogsApp = async (mode, skin) => {
-  const existingBlogs = await loadStorage();
+  const existingBlogs = await loadBlobs();
   // Setup the blog app state/store
   const store = {
     data: {
       blogs: [],
+      ...JSON.parse(existingBlogs)
+    },
+    settings: {
       skin: skin || 'default',
       mode: mode || 'basic',
-      ...JSON.parse(existingBlogs)
+      ...loadStorage()
     },
     editing: false,
     editIndex: 0,
@@ -352,7 +351,7 @@ const BlogsApp = async (mode, skin) => {
   blogAppEle.style.visibility = 'hidden';
 
   // Add the dark class if we're running in dark mode
-  if (store.data.skin === 'dark') {
+  if (store.settings.skin === 'dark') {
     blogAppEle.classList.add('dark');
     document.body.classList.add('dark');
   }
@@ -370,8 +369,8 @@ const BlogsApp = async (mode, skin) => {
   addBlogsToDOM(store, blogsEle);
 
   // Load the TinyMCE editor
-  const editorSkin = store.data.skin === 'dark' ? 'oxide-dark' : 'oxide';
-  editor.load(store.data.mode, editorSkin).then((ed) => {
+  const editorSkin = store.settings.skin === 'dark' ? 'oxide-dark' : 'oxide';
+  editor.load(store.settings.mode, editorSkin).then((ed) => {
     // Bind to click events on the save button
     const saveElm = document.getElementById('save');
     saveElm.addEventListener('click', () => save(store, ed));
@@ -382,7 +381,7 @@ const BlogsApp = async (mode, skin) => {
       if (e.target.checked) {
         blogAppEle.style.visibility = 'hidden';
         ed.remove();
-        store.data[name] = e.target.value;
+        store.settings[name] = e.target.value;
         updateStorage(store);
         window.location.reload();
       }
