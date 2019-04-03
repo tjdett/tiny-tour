@@ -109,7 +109,7 @@ const editBlog = (store, index) => {
     editor.populate(store.editor, store.data.blogs[index].body);
     store.editing = true;
     store.editIndex = index;
-    const titleEle = document.getElementById('blog-title');
+    const titleEle = document.querySelector('.blogApp .blog-title');
     titleEle.value = store.data.blogs[index].title;
 
     store.eventDispatcher.trigger('edit');
