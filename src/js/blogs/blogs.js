@@ -274,6 +274,7 @@ const BlogsApp = (mode, skin) => {
   // Add the dark class if we're running in dark mode
   if (store.data.skin === 'dark') {
     blogAppEle.classList.add('dark');
+    document.body.classList.add('dark');
   }
 
   // Create the app content/HTML

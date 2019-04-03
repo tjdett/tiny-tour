@@ -5,6 +5,7 @@
     <title>Tiny Overlay</title>
     <link rel="stylesheet" href="css/demo.css" />
     <link rel="stylesheet" href="../src/css/blog.css" />
+    <link rel="stylesheet" href="../src/css/tour.css" />
     <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.css" />
     <script src="../node_modules/tinymce/tinymce.js"></script>
 </head>
@@ -19,7 +20,13 @@
               helpUrl: './content/save.html',
               waitForEvent: 'save'
             },
-
+            {
+              helpUrl: './content/menubar.html',
+              waitForEvent: 'edit'
+            },
+            {
+              helpUrl: './content/toolbar.html',
+            }
           ]
         };
 

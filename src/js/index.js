@@ -20,6 +20,11 @@ const init = (tourConfig, mode, skin) => {
   blogApp.on('save edit', (e) => {
     tour.notify(e.type);
   });
+
+  const help = document.getElementById('help');
+  help.addEventListener('click', () => {
+    tour.resume();
+  });
 };
 
 export {

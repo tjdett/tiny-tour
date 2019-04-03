@@ -1,13 +1,22 @@
 import { openDialog } from "./dialog.js";
 
+const buildWizard = (steps, currentStepIndex) => {
+  const stepsContent = steps.map((step, index) => {
+    return `<div class="wizard-step${ index === currentStepIndex ? ' wizard-step-active' : ''}"><span class="wizard-step-number">${index + 1}</span></div>`
+  });
+
+  return `<div class="wizard">${stepsContent.join('')}</div>`
+};
+
 /**
  * Initializes tour
  *
  * @param config The tour configuration
  */
 const Tour = (config) => {
-  let activeStepIndex = 0;
+  let activeStepIndex = -1;
   let activeDialog;
+  let running = false;
 
   const hasNextStep = (stepIndex) => {
     return stepIndex < config.steps.length - 1;
@@ -17,14 +26,52 @@ const Tour = (config) => {
     return stepIndex > 0;
   };
 
-  const showStep = (stepIndex) => {
+  const buildStepButtons = (stepIndex) => {
+    const buttons = [];
+
+    if (hasPrevStep(stepIndex)) {
+      buttons.push({
+        type: 'custom',
+        name: 'prev',
+        text: 'Previous'
+      });
+    }
+    if (hasNextStep(stepIndex)) {
+      buttons.push({
+        type: 'custom',
+        name: 'next',
+        text: 'Next',
+        primary: true
+      });
+    }
+
+    buttons.push({
+      type: 'custom',
+      name: 'end',
+      text: 'End tour',
+      primary: !hasNextStep(stepIndex)
+    });
+
+    return buttons;
+  };
+
+  const showStep = (stepIndex, ignoreWait) => {
     if (activeDialog) {
       activeDialog.close();
       activeDialog = null;
     }
 
-    const step = {
-      buttons: [],
+    const step = config.steps[stepIndex];
+
+    if (step.waitForEvent && !ignoreWait) {
+      return;
+    }
+
+    activeStepIndex = stepIndex;
+
+    const dialogConfig = {
+      ...step,
+      buttons: buildStepButtons(stepIndex),
       onAction: (api, data) => {
         switch (data.name) {
           case 'next':
@@ -33,31 +80,25 @@ const Tour = (config) => {
           case 'prev':
             prev();
             break;
+          case 'end':
+            end();
+            break;
         }
       },
-      ...config.steps[stepIndex]
+      wizardHtml: buildWizard(config.steps, activeStepIndex)
     };
 
-    // Setup the buttons
-    if (hasPrevStep(stepIndex)) {
-      buttons.push('prev');
-    }
-    if (hasNextStep(stepIndex)) {
-      buttons.push('next')
-    }
-
-    activeDialog = openDialog(step);
+    activeDialog = openDialog(dialogConfig);
   };
 
   const start = (stepIndex) => {
-    activeStepIndex = stepIndex || 0;
-    showStep(activeStepIndex);
+    running = true;
+    showStep(stepIndex || 0);
   };
 
   const next = () => {
     if (hasNextStep(activeStepIndex)) {
-      activeStepIndex += 1;
-      showStep(activeStepIndex);
+      showStep(activeStepIndex + 1);
     } else {
       end();
     }
@@ -65,8 +106,7 @@ const Tour = (config) => {
 
   const prev = () => {
     if (hasPrevStep(activeStepIndex)) {
-      activeStepIndex -= 1;
-      showStep(activeStepIndex);
+      showStep(activeStepIndex - 1);
     } else {
       end();
     }
@@ -77,14 +117,21 @@ const Tour = (config) => {
       activeDialog.close();
       activeDialog = null;
     }
+    running = false;
   };
 
   const notify = (name) => {
-    if (hasNextStep(activeStepIndex)) {
+    if (running && hasNextStep(activeStepIndex)) {
       const nextStep = config.steps[activeStepIndex + 1];
       if (nextStep.waitForEvent === name) {
-        next();
+        showStep(activeStepIndex + 1, true);
       }
+    }
+  };
+
+  const resume = () => {
+    if (running) {
+      showStep(activeStepIndex, true);
     }
   };
 
@@ -93,7 +140,8 @@ const Tour = (config) => {
     end,
     next,
     prev,
-    notify
+    notify,
+    resume
   }
 };
 
