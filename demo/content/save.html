@@ -1,2 +1,10 @@
 <h1>Save</h1>
-<p>Some content about saving</p>
+<p>Clicking the Save button extracts the content from each field in the form and sends it to the server by calling the /save API running on the Node server.  Only the content and not the actual HTML form is sent to the server. Examining /src/xxx/xxx.js you can see that this is done via AJAX. Use the  getContent() API to get data from the editor. This API gets the current HTML content from the editor instance. We combine that data with the data from the standard input field and send that to the server.</p>
+
+<p>For more information on getting content from the editor, refer to #getcontent.</p>
+
+<p>NOTE: Although there is only one editor instance in this example application, there are multiple ways to target a specific editor instance on a page. Use the get() method to identify which editor instance we want to target.</p>
+
+<p>The post you have just added is now on the right hand side of the page.</p>
+
+<p>That is how easy it is to create a post using TinyMCE!</p>

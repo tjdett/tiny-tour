@@ -14,7 +14,8 @@ const buildWizard = (steps, currentStepIndex) => {
  * @param config The tour configuration
  */
 const Tour = (config) => {
-  let activeStepIndex = -1;
+  const storage = window.localStorage;
+  let activeStepIndex = JSON.parse(storage.getItem('tiny-tour.step') || 0);
   let activeDialog;
   let running = false;
 
@@ -26,9 +27,23 @@ const Tour = (config) => {
     return stepIndex > 0;
   };
 
+  const updateActiveStep = (stepIndex) => {
+    activeStepIndex = stepIndex;
+    storage.setItem('tiny-tour.step', JSON.stringify(stepIndex));
+  };
+
   const buildStepButtons = (stepIndex) => {
     const buttons = [];
 
+    // Add a button to end the tour early if the user wants
+    buttons.push({
+      type: 'custom',
+      name: 'end',
+      text: 'End tour',
+      primary: !hasNextStep(stepIndex)
+    });
+
+    // Add a previous button if a previous step exists
     if (hasPrevStep(stepIndex)) {
       buttons.push({
         type: 'custom',
@@ -36,6 +51,8 @@ const Tour = (config) => {
         text: 'Previous'
       });
     }
+
+    // Add a next button if a next step exists
     if (hasNextStep(stepIndex)) {
       buttons.push({
         type: 'custom',
@@ -45,30 +62,28 @@ const Tour = (config) => {
       });
     }
 
-    buttons.push({
-      type: 'custom',
-      name: 'end',
-      text: 'End tour',
-      primary: !hasNextStep(stepIndex)
-    });
-
     return buttons;
   };
 
   const showStep = (stepIndex, ignoreWait) => {
+    // Close any active dialogs
     if (activeDialog) {
       activeDialog.close();
       activeDialog = null;
     }
 
+    // Get the step configuration
     const step = config.steps[stepIndex];
 
+    // Skip doing anything if the step needs to wait for an event
     if (step.waitForEvent && !ignoreWait) {
       return;
     }
 
-    activeStepIndex = stepIndex;
+    // Update the active step data
+    updateActiveStep(stepIndex);
 
+    // Build up the dialog configuration
     const dialogConfig = {
       ...step,
       buttons: buildStepButtons(stepIndex),
@@ -88,12 +103,16 @@ const Tour = (config) => {
       wizardHtml: buildWizard(config.steps, activeStepIndex)
     };
 
+    // Load the step dialog
     activeDialog = openDialog(dialogConfig);
   };
 
   const start = (stepIndex) => {
     running = true;
-    showStep(stepIndex || 0);
+    const index = stepIndex || activeStepIndex;
+    if (index <= config.steps.length) {
+      showStep(index);
+    }
   };
 
   const next = () => {
@@ -117,6 +136,7 @@ const Tour = (config) => {
       activeDialog.close();
       activeDialog = null;
     }
+    updateActiveStep(config.steps.length);
     running = false;
   };
 
@@ -129,9 +149,18 @@ const Tour = (config) => {
     }
   };
 
+  const restart = () => {
+    showStep(0);
+  };
+
   const resume = () => {
     if (running) {
-      showStep(activeStepIndex, true);
+      // If we're resuming once the tour is completed, then just restart instead
+      if (activeStepIndex >= config.steps.length) {
+        restart();
+      } else {
+        showStep(activeStepIndex, true);
+      }
     }
   };
 
@@ -141,7 +170,8 @@ const Tour = (config) => {
     next,
     prev,
     notify,
-    resume
+    resume,
+    restart
   }
 };
 
