@@ -2,17 +2,15 @@
   "name": "tiny-overlay",
   "version": "1.0.0",
   "description": "Overlay for adding help content to TinyMCE",
-  "main": "lib/overlay.js",
   "scripts": {
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC",
   "devDependencies": {
-    "tinymce": "^5.0.3",
-    "tslint": "^5.14.0",
-    "typescript": "^3.4.1"
+    "@fortawesome/fontawesome-free": "^5.8.1",
+    "EventDispatcher": "0.0.3",
+    "tinymce": "^5.0.3"
   },
   "dependencies": {
     "dompurify": "^1.0.10",
@@ -20,7 +18,6 @@
     "jsdom": "^14.0.0",
     "morgan": "^1.9.1",
     "pouchdb-find": "7.0.0",
-    "pouchdb-node": "7.0.0",
-    "tslib": "^1.9.3"
+    "pouchdb-node": "7.0.0"
   }
 }
