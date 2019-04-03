@@ -18,6 +18,41 @@ const Tour = (config) => {
   let activeStepIndex = JSON.parse(storage.getItem('tiny-tour.step') || 0);
   let activeDialog;
   let running = false;
+  let bannerContainer;
+
+  const initBanner = () => {
+    const banner = document.createElement('div');
+    banner.classList.add('tour-banner');
+    banner.innerHTML = '<div></div><div><button id="help" class="tour-button" title="Help"><i class="far fa-question-circle"></i></button></div>';
+
+    if (document.body.hasChildNodes()) {
+      document.body.insertBefore(banner, document.body.firstChild);
+    } else {
+      document.body.appendChild(banner);
+    }
+
+    const help = document.getElementById('help');
+    help.addEventListener('click', () => {
+      resume();
+    });
+
+    return banner;
+  };
+
+  const updateBannerContent = (stepIndex) => {
+    if (stepIndex < 0) {
+      bannerContainer.firstChild.innerHTML = 'Welcome to the tour!';
+    } else if (isComplete(stepIndex)) {
+      bannerContainer.firstChild.innerHTML = 'Tour complete, press the help button to restart';
+    } else {
+      const step = config.steps[stepIndex];
+      bannerContainer.firstChild.innerHTML = `Step ${stepIndex + 1}: ${step.details ? step.details : step.title}`
+    }
+  };
+
+  const isComplete = (stepIndex) => {
+    return stepIndex >= config.steps.length;
+  };
 
   const hasNextStep = (stepIndex) => {
     return stepIndex < config.steps.length - 1;
@@ -83,6 +118,9 @@ const Tour = (config) => {
     // Update the active step data
     updateActiveStep(stepIndex);
 
+    // Update the banner content
+    updateBannerContent(stepIndex);
+
     // Build up the dialog configuration
     const dialogConfig = {
       ...step,
@@ -109,9 +147,13 @@ const Tour = (config) => {
 
   const start = (stepIndex) => {
     running = true;
+    bannerContainer = initBanner();
+
+    // Update the banner text and then show the current step if we're not complete
     const index = stepIndex || activeStepIndex;
-    if (index <= config.steps.length) {
-      showStep(index);
+    updateBannerContent(index);
+    if (!isComplete(index)) {
+      showStep(index, true);
     }
   };
 
@@ -138,6 +180,8 @@ const Tour = (config) => {
     }
     updateActiveStep(config.steps.length);
     running = false;
+
+    updateBannerContent(config.steps.length);
   };
 
   const notify = (name) => {
@@ -150,17 +194,16 @@ const Tour = (config) => {
   };
 
   const restart = () => {
+    running = true;
     showStep(0);
   };
 
   const resume = () => {
-    if (running) {
-      // If we're resuming once the tour is completed, then just restart instead
-      if (activeStepIndex >= config.steps.length) {
-        restart();
-      } else {
-        showStep(activeStepIndex, true);
-      }
+    // If we're resuming once the tour is completed, then just restart instead
+    if (isComplete(activeStepIndex)) {
+      restart();
+    } else if (running) {
+      showStep(activeStepIndex, true);
     }
   };
 

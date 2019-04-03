@@ -278,11 +278,10 @@ const buildInitialHtml = (store) => {
   return `<div class="content">
           <header>
             <div class="header-title">
-              <h1>Tiny Blogs</h1>
+              <h1>Tiny Blog</h1>
             </div>
             <div class="header-buttons">
               <div><button id="settings" class="blog-button" title="Settings"><i class="fas fa-cog"></i></div>
-              <div><button id="help" class="blog-button" title="Help"><i class="far fa-question-circle"></i></button></div>
             </div>
           </header>
           <div class="blog-form">

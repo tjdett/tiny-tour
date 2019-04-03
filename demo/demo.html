@@ -17,21 +17,27 @@
         const tourConfig = {
           steps: [
             {
+              title: 'Create Content',
               helpUrl: './tour/create.html',
+              details: 'Add a title and content, then click save'
             },
             {
+              title: 'Save',
               helpUrl: './tour/save.html',
               waitForEvent: 'save'
             },
             {
+              title: 'Edit Content',
               helpUrl: './tour/edit.html',
-              waitForEvent: 'edit'
+              details: 'Click the edit button, make some changes and then click save'
             },
             {
+              title: 'More features...',
               helpUrl: './tour/more-features.html',
               waitForEvent: 'save'
             },
             {
+              title: 'Skinning',
               helpUrl: './tour/skinning.html'
             }
           ]

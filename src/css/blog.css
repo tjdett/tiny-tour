@@ -55,7 +55,7 @@
     color: #fff;
 }
 
-.blogApp.dark .blog-button {
+.blogApp.dark .blog-button:hover {
     background-color: #34485f;
     border-color: #34485f;
 }
