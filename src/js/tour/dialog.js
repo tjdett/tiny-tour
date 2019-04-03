@@ -7,38 +7,14 @@ const openDialog = (config) => {
       primary: true
     });
   } else {
-    config.buttons.forEach((button) => {
-      switch (button) {
-        case 'cancel':
-          buttons.push({
-            type: 'cancel',
-            text: 'Close'
-          });
-          break;
-        case 'submit':
-          buttons.push({
-            type: 'submit',
-            text: 'Save',
-            primary: true
-          });
-          break;
-        case 'next':
-          buttons.push({
-            type: 'custom',
-            name: 'next',
-            text: 'Next'
-          });
-          break;
-        case 'prev':
-          buttons.push({
-            type: 'custom',
-            name: 'prev',
-            text: 'Previous'
-          });
-          break;
-      }
-    });
+    buttons.push(...config.buttons);
   }
+
+  // Hack needed to get the iframe in the TinyMCE dialog to take up the full height
+  tinymce.activeEditor.once('OpenWindow', () => {
+    const iframe = document.querySelector('.tox-dialog .tox-form__group iframe');
+    iframe.parentNode.style.height = '100%';
+  });
 
   return tinymce.activeEditor.windowManager.open({
     title: 'Tiny Tour',
@@ -46,6 +22,10 @@ const openDialog = (config) => {
     body: {
       type: 'panel',
       items: [
+        {
+          type: 'htmlpanel',
+          html: config.wizardHtml
+        },
         {
           type: 'htmlpanel',
           html: config.helpUrl ? `<iframe style="width: 100%; height: 100%" src="${config.helpUrl}"></iframe>` :

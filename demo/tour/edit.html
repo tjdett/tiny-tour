@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="../css/tour-content.css" rel="stylesheet">
+</head>
+<body>
+<h2>Edit Content</h2>
+<p>Now that we have created a new post and used <span class="example">getContent()</span> to store that post on the server, let’s look at how we can reload and edit that post back into TinyMCE.</p>
+
+<p>First, click on the <strong>Edit</strong> button to the right of the post you created in Step 1. This loads the same form, TinyMCE and the saved content into the browser.</p>
+
+<p><span class="example">/src/xxx/xxx.js</span> contains the function <span class="example">loadContent()</span>.  This function is responsible for getting your existing post content from our server and loading it into the form. TinyMCE’s <a href="https://www.tiny.cloud/docs/api/tinymce/tinymce.editor/#setcontent"><span class="example">setContent()</span></a> API loads the content into TinyMCE.</p>
+
+<p>As with <span class="example">getContent()</span>, you do have to target a specific editor instance but once you have an editor instance targeted you can use <span class="example">setContent()</span> to load an existing string of HTML.</p>
+
+</body>
+</html>

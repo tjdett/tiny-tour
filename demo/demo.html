@@ -5,25 +5,40 @@
     <title>Tiny Overlay</title>
     <link rel="stylesheet" href="css/demo.css" />
     <link rel="stylesheet" href="../src/css/blog.css" />
+    <link rel="stylesheet" href="../src/css/tour.css" />
     <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.css" />
     <script src="../node_modules/tinymce/tinymce.js"></script>
 </head>
 <body>
     <div id="blogApp"></div>
     <script type="module">
-        import * as tour from "../src/js/index.js";
+        import { init } from "../src/js/index.js";
 
         const tourConfig = {
           steps: [
             {
-              helpUrl: './content/save.html',
-              waitForEvent: 'save'
+              helpUrl: './tour/create.html',
             },
-
+            {
+              helpUrl: './tour/save.html',
+              // waitForEvent: 'save'
+            },
+            {
+              helpUrl: './tour/edit.html',
+              // waitForEvent: 'edit'
+            },
+            {
+              helpUrl: './tour/more-features.html',
+              // waitForEvent: 'save'
+            },
+            {
+              helpUrl: './tour/skinning.html',
+              // waitForEvent: 'save'
+            }
           ]
         };
 
-        tour.init(tourConfig);
+        init(tourConfig);
     </script>
 </body>
 </html>

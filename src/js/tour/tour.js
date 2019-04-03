@@ -1,13 +1,23 @@
 import { openDialog } from "./dialog.js";
 
+const buildWizard = (steps, currentStepIndex) => {
+  const stepsContent = steps.map((step, index) => {
+    return `<div class="wizard-step${ index === currentStepIndex ? ' wizard-step-active' : ''}"><span class="wizard-step-number">${index + 1}</span></div>`
+  });
+
+  return `<div class="wizard">${stepsContent.join('')}</div>`
+};
+
 /**
  * Initializes tour
  *
  * @param config The tour configuration
  */
 const Tour = (config) => {
-  let activeStepIndex = 0;
+  const storage = window.localStorage;
+  let activeStepIndex = JSON.parse(storage.getItem('tiny-tour.step') || 0);
   let activeDialog;
+  let running = false;
 
   const hasNextStep = (stepIndex) => {
     return stepIndex < config.steps.length - 1;
@@ -17,14 +27,66 @@ const Tour = (config) => {
     return stepIndex > 0;
   };
 
-  const showStep = (stepIndex) => {
+  const updateActiveStep = (stepIndex) => {
+    activeStepIndex = stepIndex;
+    storage.setItem('tiny-tour.step', JSON.stringify(stepIndex));
+  };
+
+  const buildStepButtons = (stepIndex) => {
+    const buttons = [];
+
+    // Add a button to end the tour early if the user wants
+    buttons.push({
+      type: 'custom',
+      name: 'end',
+      text: 'End tour',
+      primary: !hasNextStep(stepIndex)
+    });
+
+    // Add a previous button if a previous step exists
+    if (hasPrevStep(stepIndex)) {
+      buttons.push({
+        type: 'custom',
+        name: 'prev',
+        text: 'Previous'
+      });
+    }
+
+    // Add a next button if a next step exists
+    if (hasNextStep(stepIndex)) {
+      buttons.push({
+        type: 'custom',
+        name: 'next',
+        text: 'Next',
+        primary: true
+      });
+    }
+
+    return buttons;
+  };
+
+  const showStep = (stepIndex, ignoreWait) => {
+    // Close any active dialogs
     if (activeDialog) {
       activeDialog.close();
       activeDialog = null;
     }
 
-    const step = {
-      buttons: [],
+    // Get the step configuration
+    const step = config.steps[stepIndex];
+
+    // Skip doing anything if the step needs to wait for an event
+    if (step.waitForEvent && !ignoreWait) {
+      return;
+    }
+
+    // Update the active step data
+    updateActiveStep(stepIndex);
+
+    // Build up the dialog configuration
+    const dialogConfig = {
+      ...step,
+      buttons: buildStepButtons(stepIndex),
       onAction: (api, data) => {
         switch (data.name) {
           case 'next':
@@ -33,31 +95,29 @@ const Tour = (config) => {
           case 'prev':
             prev();
             break;
+          case 'end':
+            end();
+            break;
         }
       },
-      ...config.steps[stepIndex]
+      wizardHtml: buildWizard(config.steps, activeStepIndex)
     };
 
-    // Setup the buttons
-    if (hasPrevStep(stepIndex)) {
-      buttons.push('prev');
-    }
-    if (hasNextStep(stepIndex)) {
-      buttons.push('next')
-    }
-
-    activeDialog = openDialog(step);
+    // Load the step dialog
+    activeDialog = openDialog(dialogConfig);
   };
 
   const start = (stepIndex) => {
-    activeStepIndex = stepIndex || 0;
-    showStep(activeStepIndex);
+    running = true;
+    const index = stepIndex || activeStepIndex;
+    if (index <= config.steps.length) {
+      showStep(index);
+    }
   };
 
   const next = () => {
     if (hasNextStep(activeStepIndex)) {
-      activeStepIndex += 1;
-      showStep(activeStepIndex);
+      showStep(activeStepIndex + 1);
     } else {
       end();
     }
@@ -65,8 +125,7 @@ const Tour = (config) => {
 
   const prev = () => {
     if (hasPrevStep(activeStepIndex)) {
-      activeStepIndex -= 1;
-      showStep(activeStepIndex);
+      showStep(activeStepIndex - 1, true);
     } else {
       end();
     }
@@ -77,13 +136,30 @@ const Tour = (config) => {
       activeDialog.close();
       activeDialog = null;
     }
+    updateActiveStep(config.steps.length);
+    running = false;
   };
 
   const notify = (name) => {
-    if (hasNextStep(activeStepIndex)) {
+    if (running && hasNextStep(activeStepIndex)) {
       const nextStep = config.steps[activeStepIndex + 1];
       if (nextStep.waitForEvent === name) {
-        next();
+        showStep(activeStepIndex + 1, true);
+      }
+    }
+  };
+
+  const restart = () => {
+    showStep(0);
+  };
+
+  const resume = () => {
+    if (running) {
+      // If we're resuming once the tour is completed, then just restart instead
+      if (activeStepIndex >= config.steps.length) {
+        restart();
+      } else {
+        showStep(activeStepIndex, true);
       }
     }
   };
@@ -93,7 +169,9 @@ const Tour = (config) => {
     end,
     next,
     prev,
-    notify
+    notify,
+    resume,
+    restart
   }
 };
 

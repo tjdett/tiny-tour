@@ -1,0 +1,52 @@
+.wizard {
+    display: flex;
+    justify-content: center;
+}
+
+.wizard .wizard-step {
+    flex-grow: 1;
+    position: relative;
+    text-align: center;
+}
+
+.wizard .wizard-step-number {
+    background-color: #fff;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    display: inline-block;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    width: 25px;
+}
+
+.dark .wizard .wizard-step-number {
+    background-color: #2b3b4e;
+}
+
+.wizard .wizard-step-active .wizard-step-number {
+    border: 2px solid #3498db;
+    background-color: #3498db;
+    color: #fff;
+}
+
+.wizard .wizard-step:before {
+    background-color: #ccc;
+    content: '';
+    height: 2px;
+    left: 0;
+    right: 0;
+    position: absolute;
+    top: 12px;
+    z-index: -1;
+}
+
+.wizard .wizard-step:first-child:before {
+    left: 50%;
+    right: 0;
+}
+
+.wizard .wizard-step:last-child:before {
+    left: 0;
+    right: 50%;
+}

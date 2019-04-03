@@ -153,7 +153,7 @@ const editBlog = (store, index) => {
     editor.populate(store.editor, store.data.blogs[index].content);
     store.editing = true;
     store.editIndex = store.data.blogs[index].id;
-    const titleEle = document.getElementById('blog-title');
+    const titleEle = document.querySelector('.blogApp .blog-title');
     titleEle.value = store.data.blogs[index].title;
 
     store.eventDispatcher.trigger('edit');
@@ -201,10 +201,13 @@ const renderBlogs = (store) => {
  * @param dom The DOM element to add all the created blogs to
  */
 const addBlogsToDOM = (store, dom) => {
-  store.data.blogs.forEach((blog, index) => {
-    const blogEle = createBlog(store, blog.title, blog.content, index);
-    dom.appendChild(blogEle);
-  });
+  if (store.data.blogs.length > 0) {
+    dom.innerHTML = '';
+    store.data.blogs.forEach((blog, index) => {
+      const blogEle = createBlog(store, blog.title, blog.content, index);
+      dom.appendChild(blogEle);
+    });
+  }
 };
 
 /**
@@ -216,6 +219,7 @@ const removeBlogsFromDOM = (dom) => {
   while (dom.hasChildNodes()) {
     dom.removeChild(dom.lastChild);
   }
+  dom.innerHTML = '<div class="no-blogs">No blogs</div>';
 };
 
 /**
@@ -225,8 +229,9 @@ const removeBlogsFromDOM = (dom) => {
  * @param ed The current TinyMCE editor instance, that contains the blog contents.
  */
 const save = (store, ed) => {
-  // Get the blog title element
-  const titleEle = document.getElementById('blog-title');
+  // Get the blog title/editor element
+  const titleEle = document.querySelector('.blogApp .blog-title');
+  const editorEle = document.querySelector('.blogApp .blog-content');
 
   // Get the data
   const title = titleEle.value;
@@ -246,6 +251,21 @@ const save = (store, ed) => {
     editor.reset(ed);
 
     store.eventDispatcher.trigger('save');
+  } else {
+    if (title.length === 0) {
+      titleEle.classList.add('blog-error');
+      const changeHandler = () => {
+        titleEle.classList.remove('blog-error');
+        titleEle.removeEventListener('change', changeHandler);
+      };
+      titleEle.addEventListener('change', changeHandler);
+    }
+    if (content.length === 0) {
+      editorEle.classList.add('blog-error');
+      ed.once('change', () => {
+        editorEle.classList.remove('blog-error');
+      });
+    }
   }
 };
 
@@ -276,11 +296,13 @@ const buildInitialHtml = (store) => {
           <div class="blog-form">
               <div class="blog-form__group">
                   <label class="blog-label">Title:</label>
-                  <input id="blog-title" type="text" class="blog-textfield" />
+                  <input type="text" class="blog-title blog-textfield" />
               </div>
               <div class="blog-form__group">
                   <label class="blog-label">Content:</label>
-                  <textarea id="editor"></textarea>
+                  <div class="blog-content">
+                    <textarea id="editor"></textarea>
+                  </div>
               </div>
               <footer>
                   <button id="save" class="blog-button blog-button__primary">Save</button>
@@ -332,6 +354,7 @@ const BlogsApp = async (mode, skin) => {
   // Add the dark class if we're running in dark mode
   if (store.data.skin === 'dark') {
     blogAppEle.classList.add('dark');
+    document.body.classList.add('dark');
   }
 
   // Create the app content/HTML
@@ -340,6 +363,7 @@ const BlogsApp = async (mode, skin) => {
   // Add the blogs container
   const blogsEle = document.createElement('div');
   blogsEle.classList.add('blogs');
+  blogsEle.innerHTML = '<div class="no-blogs">No blogs</div>';
   blogAppEle.appendChild(blogsEle);
 
   // Load any previously saved blogs
@@ -371,7 +395,7 @@ const BlogsApp = async (mode, skin) => {
 
     // Get the blog title element and focus it to make it easier to get started
     // adding a new blog entry
-    const titleEle = document.getElementById('blog-title');
+    const titleEle = document.querySelector('.blogApp .blog-title');
     titleEle.focus();
 
     // Trigger that the app is initialized

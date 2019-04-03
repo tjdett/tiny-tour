@@ -5,10 +5,10 @@ const init = async (tourConfig, mode, skin) => {
   // Initialize the blog app
   const blogApp = await BlogsApp(mode, skin);
 
-  // Add a dummy blog
-  if (blogApp.getBlogs().length === 0) {
-    blogApp.addBlog('Test', 'Some content');
-  }
+  // // Add a dummy blog
+  // if (blogApp.getBlogs().length === 0) {
+  //   blogApp.addBlog('Test', 'Some content');
+  // }
 
   // Initialize the tour
   const tour = Tour(tourConfig);
@@ -19,6 +19,11 @@ const init = async (tourConfig, mode, skin) => {
 
   blogApp.on('save edit', (e) => {
     tour.notify(e.type);
+  });
+
+  const help = document.getElementById('help');
+  help.addEventListener('click', () => {
+    tour.resume();
   });
 };
 
