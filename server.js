@@ -10,7 +10,13 @@ PouchDB.plugin(require('pouchdb-find'))
 function App(data) {
   const app = express()
   app.use(morgan('tiny'))
-  app.use(express.json())
+  app.use(express.json());
+
+  // Static client setup
+  ['demo', 'node_modules', 'src'].forEach(
+    (dir) => app.use('/' + dir, express.static(dir))
+  )
+  app.get('/', (_, req) => req.redirect('/demo/demo.html'))
 
   const makeSafe = ({ title, content: unsafeContent }) => ({
     title,
@@ -21,6 +27,7 @@ function App(data) {
     console.log(err)
     res.status(err.status).send(err.message)
   }
+
 
   app.get('/articles', (req, res) =>
     data.list(req.params.limit, req.params.before)
