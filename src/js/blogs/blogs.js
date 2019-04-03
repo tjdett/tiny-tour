@@ -147,7 +147,7 @@ const editBlog = (state, index) => {
     });
 
     // Dispatch an event to notify that we're editing a blog
-    state.eventDispatcher.trigger('edit', { blogId: blog.id });
+    state.eventDispatcher.trigger('edit', [{ blogId: blog.id }]);
   }
 };
 
@@ -172,7 +172,7 @@ const createBlog = async (state, title, content) => {
  * @param index The index of the blog to update from the stores blog list.
  */
 const updateBlog = async (state, title, content, index) => {
-  store.data.blogs[index] = {title: title, content: content};
+  state.data.blogs[index] = {title: title, content: content};
   await sendServerRequest(`/articles/` + state.editIndex, { title: title, content: content }, "PUT");
   processDataUpdate(state);
 };
@@ -367,7 +367,7 @@ const populateState = async (mode, skin) => {
  * @param skin The skin to load the editor as. [default|dark]
  */
 const BlogsApp = async (mode, skin) => {
-  // Setup the blog app state/store
+  // Setup the blog app state
   const state = await populateState(mode, skin);
 
   // Setup the root element, by adding the 'blogApp' class to allow styling and
