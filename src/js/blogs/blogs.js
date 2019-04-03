@@ -76,6 +76,11 @@ const saveSettings = (store) => {
   window.localStorage.setItem('tiny-blogs.settings', JSON.stringify(store.settings));
 };
 
+
+const updateBlogs = (store) => {
+  window.localStorage.setItem('tiny-data', JSON.stringify(store.data));
+}
+
 const loadSettings = () => {
   try {
     return JSON.parse(window.localStorage.getItem('tiny-blogs.settings') || '{}');
@@ -85,23 +90,19 @@ const loadSettings = () => {
   }
 };
 
-const loadBlobs = async (mode, skin) => {
-// async function loadStorage(mode, skin) {
-  console.log('Load blobs');
-
-  const fetched = await fetch('/articles/')
+const loadBlobs = async () => {
+  const fetchedBlogs = await fetch('/articles/')
     .then(function(response) {
       if (response.status !== 200) {
         throw "load storage failed";
       }
       return response.json();
     })
-    .then(function(myJson) {
-      console.log(JSON.stringify(myJson.articles));
-      return JSON.stringify({blogs: myJson.articles});
+    .then(function(blogs) {
+      return JSON.stringify({blogs: blogs.articles});
     });
 
-  return fetched;
+  return fetchedBlogs;
 };
 
 /**
@@ -111,16 +112,12 @@ const loadBlobs = async (mode, skin) => {
  * @param title The title of the blog entry.
  * @param content The HTML content of the blog entry.
  */
-const addBlog = (store, title, content) => {
-  store.data.blogs.push({title: title, content: content});
-  renderBlogs(store);
-
-  postData(`/articles/`, { title: title, content: content })
-    .then(data => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
-    .catch(error => console.error(error));
+const addBlog = async (store, title, content) => {
+  await sendServerRequest(`/articles/`, { title: title, content: content });    
+  processDataUpdate(store);
 };
 
-const postData = (url, blog, method = "POST") => {
+const sendServerRequest = async (url, blog, method = "POST") => {
   return fetch(url, {
     method: method || "POST",
     mode: "cors",
@@ -133,7 +130,8 @@ const postData = (url, blog, method = "POST") => {
     referrer: "no-referrer",
     body: JSON.stringify(blog),
   })
-  .then(response => response.json());
+  .then(response => response.length > 0 && response.json())
+  .catch(error => console.error(error));
 };
 
 /**
@@ -145,22 +143,31 @@ const postData = (url, blog, method = "POST") => {
  */
 const editBlog = (store, index) => {
   if (store.editor) {
-    editor.populate(store.editor, store.data.blogs[index].content);
     store.editing = true;
     store.editIndex = store.data.blogs[index].id;
     const titleEle = document.querySelector('.blogApp .blog-title');
+    const editorEle = document.querySelector('.blogApp .blog-content');
     titleEle.value = store.data.blogs[index].title;
+    editor.populate(store.editor, store.data.blogs[index].content);
+    titleEle.classList.add('blog-edit');
+    editorEle.classList.add('blog-edit');
 
+    const changeHandler = () => {
+      titleEle.classList.remove('blog-edit');
+      titleEle.removeEventListener('change', changeHandler);
+    };
+    titleEle.addEventListener('change', changeHandler);
+    store.editor.once('change', () => {
+      editorEle.classList.remove('blog-edit');
+    });
     store.eventDispatcher.trigger('edit');
   }
 };
 
-const confirmEdit = (store, title, content, index) => {
+const publishEdit = async (store, title, content, index) => {
   store.data.blogs[index] = {title: title, content: content};
-  postData(`/articles/` + store.editIndex, { title: title, content: content }, "PUT")
-    .then(data => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
-    .catch(error => console.error(error));
-  renderBlogs(store);
+  await sendServerRequest(`/articles/` + store.editIndex, { title: title, content: content }, "PUT");
+  processDataUpdate(store);
 };
 
 /**
@@ -169,15 +176,21 @@ const confirmEdit = (store, title, content, index) => {
  * @param store The datastore for the blog details.
  * @param index The index of the blog to delete from the stores blog list.
  */
-const deleteBlog = (store, index) => {
+const deleteBlog = async (store, index) => {
   store.editIndex = store.data.blogs[index].id;
-  const deleteIndex = store.data.blogs[index].id;
-  postData(`/articles/` + deleteIndex, { title: "", content: "" }, "DELETE")
-    .then(data => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
-    .catch(error => console.error(error));
-  store.data.blogs.splice(index, 1);
-  renderBlogs(store);
+  sendServerRequest(`/articles/` + store.data.blogs[index].id, { title: "", content: "" }, "DELETE");
+  // store.data.blogs.splice(index, 1);
+  processDataUpdate(store);
 };
+
+const processDataUpdate = async (store) => {
+  store.editing = false;
+  store.editIndex = 0;
+  let updatedBlogs = await loadBlobs();
+  store.data = JSON.parse(updatedBlogs);
+  updateBlogs(store);
+  renderBlogs(store);
+}
 
 // Re-populate blogs list following add/edit/remove
 const renderBlogs = (store) => {
@@ -232,12 +245,10 @@ const save = (store) => {
   // Create the blog and add it to the blogs list
   if (title.length > 0 && content.length > 0) {
     if (store.editing) {
-      confirmEdit(store, title, content, store.editIndex);
+      publishEdit(store, title, content, store.editIndex);
     } else {
       addBlog(store, title, content);
     }
-    store.editing = false;
-    store.editIndex = 0;
     // Reset the blog input/editor
     titleEle.value = null;
     editor.reset(store.editor);
@@ -314,17 +325,9 @@ const buildInitialHtml = (store) => {
       </div>`;
 };
 
-/**
- * Initialize and setup the Tiny Blog application. This will find the element with the
- * `blogApp` id and initialize the application inside that element.
- *
- * @param mode The mode to load the blog editor in. [basic|full]
- * @param skin The skin to load the editor as. [default|dark]
- */
-const BlogsApp = async (mode, skin) => {
+const populateStore = async (mode, skin, dataOnly = false) => {
   const existingBlogs = await loadBlobs();
-  // Setup the blog app state/store
-  const store = {
+  return {
     data: {
       blogs: [],
       ...JSON.parse(existingBlogs)
@@ -338,6 +341,18 @@ const BlogsApp = async (mode, skin) => {
     editIndex: 0,
     eventDispatcher: new EventDispatcher()
   };
+}
+
+/**
+ * Initialize and setup the Tiny Blog application. This will find the element with the
+ * `blogApp` id and initialize the application inside that element.
+ *
+ * @param mode The mode to load the blog editor in. [basic|full]
+ * @param skin The skin to load the editor as. [default|dark]
+ */
+const BlogsApp = async (mode, skin) => {
+  // Setup the blog app state/store
+  const store = await populateStore(mode, skin);
 
   // Setup the root element, by adding the 'blogApp' class to allow styling and
   // set the app as hidden for now until loading completes

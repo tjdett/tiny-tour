@@ -148,6 +148,11 @@
     border: 1px solid #d80606;
 }
 
+.blogApp .blog-edit {
+    border: 1px solid green;
+}
+
+
 .blogApp .no-blogs {
     margin: auto;
     color: #ccc;
