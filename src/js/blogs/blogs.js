@@ -219,16 +219,15 @@ const removeBlogsFromDOM = (dom) => {
  * Saves or updates a new blog entry.
  *
  * @param store The datastore for the blog details.
- * @param ed The current TinyMCE editor instance, that contains the blog contents.
  */
-const save = (store, ed) => {
+const save = (store) => {
   // Get the blog title/editor element
   const titleEle = document.querySelector('.blogApp .blog-title');
   const editorEle = document.querySelector('.blogApp .blog-content');
 
   // Get the data
   const title = titleEle.value;
-  const content = ed.getContent();
+  const content = store.editor.getContent();
 
   // Create the blog and add it to the blogs list
   if (title.length > 0 && content.length > 0) {
@@ -241,7 +240,7 @@ const save = (store, ed) => {
     store.editIndex = 0;
     // Reset the blog input/editor
     titleEle.value = null;
-    editor.reset(ed);
+    editor.reset(store.editor);
 
     store.eventDispatcher.trigger('save');
   } else {
@@ -255,7 +254,7 @@ const save = (store, ed) => {
     }
     if (content.length === 0) {
       editorEle.classList.add('blog-error');
-      ed.once('change', () => {
+      store.editor.once('change', () => {
         editorEle.classList.remove('blog-error');
       });
     }
@@ -367,36 +366,35 @@ const BlogsApp = async (mode, skin) => {
 
   // Load the TinyMCE editor
   const editorSkin = store.settings.skin === 'dark' ? 'oxide-dark' : 'oxide';
-  editor.load(store.settings.mode, editorSkin).then((ed) => {
-    // Bind to click events on the save button
-    const saveElm = document.getElementById('save');
-    saveElm.addEventListener('click', () => save(store, ed));
-    store.editor = ed;
+  store.editor = await editor.load(store.settings.mode, editorSkin);
 
-    // Bind the radio button change events for the skin and mode
-    const changeHandler = (name, e) => {
-      if (e.target.checked) {
-        blogAppEle.style.visibility = 'hidden';
-        ed.remove();
-        store.settings[name] = e.target.value;
-        saveSettings(store);
-        window.location.reload();
-      }
-    };
-    bindToggleChange('skin', changeHandler);
-    bindToggleChange('mode', changeHandler);
+  // Bind to click events on the save button
+  const saveElm = document.getElementById('save');
+  saveElm.addEventListener('click', () => save(store));
 
-    // The app is fully loaded now, so make it visible
-    blogAppEle.style.visibility = 'visible';
+  // Bind the radio button change events for the skin and mode
+  const changeHandler = (name, e) => {
+    if (e.target.checked) {
+      blogAppEle.style.visibility = 'hidden';
+      store.editor.remove();
+      store.settings[name] = e.target.value;
+      saveSettings(store);
+      window.location.reload();
+    }
+  };
+  bindToggleChange('skin', changeHandler);
+  bindToggleChange('mode', changeHandler);
 
-    // Get the blog title element and focus it to make it easier to get started
-    // adding a new blog entry
-    const titleEle = document.querySelector('.blogApp .blog-title');
-    titleEle.focus();
+  // The app is fully loaded now, so make it visible
+  blogAppEle.style.visibility = 'visible';
 
-    // Trigger that the app is initialized
-    store.eventDispatcher.trigger('init');
-  });
+  // Get the blog title element and focus it to make it easier to get started
+  // adding a new blog entry
+  const titleEle = document.querySelector('.blogApp .blog-title');
+  titleEle.focus();
+
+  // Trigger that the app is initialized
+  store.eventDispatcher.trigger('init');
 
   return {
     addBlog: (title, content) => addBlog(store, title, content),
