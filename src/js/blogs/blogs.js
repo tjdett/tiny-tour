@@ -16,7 +16,7 @@ const renderButton = (name, btnClasses, iconClasses) => {
 /**
  * Creates the wrapper and all buttons for a single blog post.
  */
-const renderBlogButtons = (state, index) => {
+const renderBlogButtons = (state, blogId) => {
   // Create a wrapper to hold the buttons
   const buttonsEle = document.createElement('div');
   buttonsEle.className = 'blog-buttons';
@@ -26,8 +26,8 @@ const renderBlogButtons = (state, index) => {
   const deleteButton = renderButton('Delete', 'blog-button__error', 'far fa-trash-alt');
 
   // Wire up the button actions
-  editButton.addEventListener('click', () => editBlog(state, index));
-  deleteButton.addEventListener('click', () => deleteBlog(state, index));
+  editButton.addEventListener('click', () => editBlog(state, blogId));
+  deleteButton.addEventListener('click', () => deleteBlog(state, blogId));
 
   // Add the buttons to the wrapper
   buttonsEle.appendChild(editButton);
@@ -41,9 +41,8 @@ const renderBlogButtons = (state, index) => {
  *
  * @param state The state of the various data in the application.
  * @param blog The blog post to render.
- * @param index The index of the post in the blog.
  */
-const renderBlog = (state, blog, index) => {
+const renderBlog = (state, blog) => {
   // Create the wrapper element to hold all the blog details
   const blogEle = document.createElement('div');
   blogEle.classList.add('blog');
@@ -61,7 +60,7 @@ const renderBlog = (state, blog, index) => {
   contentEle.innerHTML = blog.content;
 
   // Create the blog buttons
-  const buttonsEle = renderBlogButtons(state, index);
+  const buttonsEle = renderBlogButtons(state, blog.id);
 
   // Add all the newly created elements to dom
   innerEle.appendChild(header);
@@ -96,18 +95,21 @@ const loadSettings = () => {
 /**
  * Load all blog posts from the backend server.
  *
- * @returns {Promise<string>} The loaded blogs
+ * @returns {Promise} The loaded blogs
  */
-const loadBlobs = async () => {
+const loadBlogs = async () => {
   return await fetch('/articles/')
     .then((response) => {
       if (response.status !== 200) {
         throw new Error("Failed to load blogs from storage");
       }
       return response.json();
-    })
-    .then((blogs) => {
-      return JSON.stringify({ blogs: blogs.articles });
+    }).then((blogs) => {
+      // Convert array of blogs to object mapped by id
+      return blogs.articles.reduce((acc, blog) => {
+        acc[blog.id] = blog;
+        return acc;
+      }, {});
     });
 };
 
@@ -116,15 +118,15 @@ const loadBlobs = async () => {
  * be updated.
  *
  * @param state The state of the various data in the application.
- * @param index The index of the blog to edit from the stores blog list.
+ * @param blogId The id of the blog to edit from the stores blog list.
  */
-const editBlog = (state, index) => {
+const editBlog = (state, blogId) => {
   if (state.editor) {
-    const blog = state.data.blogs[index];
+    const blog = state.data.blogs[blogId];
 
     // Update the application state so we know we're now editing a post
     state.editing = true;
-    state.editIndex = blog.id;
+    state.editId = blog.id;
 
     // Update the TinyMCE editor content and add the blog-edit class
     editor.populate(state.editor, blog.content);
@@ -173,7 +175,7 @@ const createBlog = async (state, title, content) => {
  */
 const updateBlog = async (state, title, content, index) => {
   state.data.blogs[index] = {title: title, content: content};
-  await sendServerRequest(`/articles/` + state.editIndex, { title: title, content: content }, "PUT");
+  await sendServerRequest(`/articles/` + state.editId, { title: title, content: content }, "PUT");
   processDataUpdate(state);
 };
 
@@ -181,12 +183,14 @@ const updateBlog = async (state, title, content, index) => {
  * Deletes a blog at the specified index.
  *
  * @param state The state of the various data in the application.
- * @param index The index of the blog to delete from the stores blog list.
+ * @param blogId The id of the blog to delete from the stores blog list.
  */
-const deleteBlog = async (state, index) => {
-  state.editIndex = state.data.blogs[index].id;
-  sendServerRequest(`/articles/` + state.data.blogs[index].id, { title: "", content: "" }, "DELETE");
-  processDataUpdate(state);
+const deleteBlog = async (state, blogId) => {
+  const blog = state.data.blogs[blogId];
+  if (blog) {
+    sendServerRequest(`/articles/` + blogId, {title: "", content: ""}, "DELETE");
+    processDataUpdate(state);
+  }
 };
 
 /**
@@ -196,9 +200,8 @@ const deleteBlog = async (state, index) => {
  */
 const processDataUpdate = async (state) => {
   state.editing = false;
-  state.editIndex = 0;
-  const updatedBlogs = await loadBlobs();
-  state.data = JSON.parse(updatedBlogs);
+  state.editId = null;
+  state.data.blogs = await loadBlogs();
   renderBlogs(state);
 };
 
@@ -221,10 +224,12 @@ const renderBlogs = (state) => {
  * @param dom The DOM element to add all the created blogs to.
  */
 const addBlogsToDOM = (state, dom) => {
-  if (state.data.blogs.length > 0) {
+  const blogIds = Object.keys(state.data.blogs);
+  if (blogIds.length > 0) {
     dom.innerHTML = '';
-    state.data.blogs.forEach((blog, index) => {
-      const blogEle = renderBlog(state, blog, index);
+    blogIds.forEach((blogId) => {
+      const blog = state.data.blogs[blogId];
+      const blogEle = renderBlog(state, blog);
       dom.appendChild(blogEle);
     });
   }
@@ -259,12 +264,12 @@ const save = (state) => {
   // Create the blog and add it to the blogs list
   if (title.length > 0 && content.length > 0) {
     if (state.editing) {
-      updateBlog(state, title, content, state.editIndex);
+      updateBlog(state, title, content, state.editId);
     } else {
       createBlog(state, title, content);
     }
     state.editing = false;
-    state.editIndex = 0;
+    state.editId = null;
     // Reset the blog input/editor
     titleEle.value = null;
     editor.reset(state.editor);
@@ -342,11 +347,10 @@ const buildInitialHtml = (state) => {
 };
 
 const populateState = async (mode, skin) => {
-  const existingBlogs = await loadBlobs();
+  const existingBlogs = await loadBlogs();
   return {
     data: {
-      blogs: [],
-      ...JSON.parse(existingBlogs)
+      blogs: existingBlogs
     },
     settings: {
       skin: skin || 'default',
@@ -354,7 +358,7 @@ const populateState = async (mode, skin) => {
       ...loadSettings()
     },
     editing: false,
-    editIndex: 0,
+    editId: null,
     eventDispatcher: new EventDispatcher()
   };
 };
@@ -428,7 +432,7 @@ const BlogsApp = async (mode, skin) => {
 
   return {
     addBlog: (title, content) => createBlog(state, title, content),
-    getBlogs: () => state.data.blogs.slice(0),
+    getBlogs: () => ({ ...state.data.blogs }),
     deleteBlog: (index) => deleteBlog(state, index),
     on: (name, cb) => state.eventDispatcher.on(name, cb)
   };
