@@ -149,10 +149,13 @@ const renderBlogs = (store) => {
  * @param dom The DOM element to add all the created blogs to
  */
 const addBlogsToDOM = (store, dom) => {
-  store.data.blogs.forEach((blog, index) => {
-    const blogEle = createBlog(store, blog.title, blog.body, index);
-    dom.appendChild(blogEle);
-  });
+  if (store.data.blogs.length > 0) {
+    dom.innerHTML = '';
+    store.data.blogs.forEach((blog, index) => {
+      const blogEle = createBlog(store, blog.title, blog.body, index);
+      dom.appendChild(blogEle);
+    });
+  }
 };
 
 /**
@@ -164,6 +167,7 @@ const removeBlogsFromDOM = (dom) => {
   while (dom.hasChildNodes()) {
     dom.removeChild(dom.lastChild);
   }
+  dom.innerHTML = '<div class="no-blogs">No blogs</div>';
 };
 
 /**
@@ -301,6 +305,7 @@ const BlogsApp = (mode, skin) => {
   // Add the blogs container
   const blogsEle = document.createElement('div');
   blogsEle.classList.add('blogs');
+  blogsEle.innerHTML = '<div class="no-blogs">No blogs</div>';
   blogAppEle.appendChild(blogsEle);
 
   // Load any previously saved blogs

@@ -14,11 +14,12 @@
 }
 
 .blogApp .blogs {
-    width: 30%;
     box-sizing: border-box;
-    border-left: 1px solid #ccc;;
+    border-left: 1px solid #ccc;
+    display: flex;
     height: 100%;
     overflow-y: scroll;
+    width: 30%;
 }
 
 .blogApp header, .blogApp footer {
@@ -49,6 +50,7 @@
     padding: 10px;
     border-bottom: 1px solid #ccc;
     display: flex;
+    flex-basis: 100%;
 }
 
 .blogApp .blog .inner {
@@ -113,4 +115,9 @@
 
 .blogApp .blog-error {
     border: 1px solid #d80606;
+}
+
+.blogApp .no-blogs {
+    margin: auto;
+    color: #ccc;
 }
