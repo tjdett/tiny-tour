@@ -12,9 +12,9 @@ function App(data) {
   app.use(morgan('tiny'))
   app.use(express.json())
 
-  const makeSafe = ({ title, description: unsafeDescription }) => ({
+  const makeSafe = ({ title, content: unsafeContent }) => ({
     title,
-    description: DOMPurify.sanitize(unsafeDescription)
+    content: DOMPurify.sanitize(unsafeContent)
   })
 
   const errHandler = (res) => (err) => {
@@ -57,17 +57,17 @@ function App(data) {
 
 function Data(db) {
 
-  const toArticle = ({ _id: id, title, description, created }) => {
-    return { id, title, description, created }
+  const toArticle = ({ _id: id, title, content, created }) => {
+    return { id, title, content, created }
   }
   const get = (id) => db.get(id).then(toArticle)
-  const create = ({ title, description }) =>
-    db.post({ title, description, created: new Date().toJSON() })
+  const create = ({ title, content }) =>
+    db.post({ title, content, created: new Date().toJSON() })
       .then(({ id }) => get(id))
-  const update = ({ id: _id, title, description }) =>
+  const update = ({ id: _id, title, content }) =>
     db.get(_id)
       .then(({ _rev, created }) =>
-        db.put({ _id, _rev, title, description, created })
+        db.put({ _id, _rev, title, content, created })
       )
       .then(({ id }) => get(id))
   const remove = (id) => db.get(id).then(({ _rev }) => db.remove(id, _rev))
