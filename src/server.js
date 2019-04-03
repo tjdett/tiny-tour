@@ -1,12 +1,21 @@
 const express = require('express'),
   morgan = require('morgan'),
-  PouchDB = require('pouchdb-node')
-PouchDB.plugin(require('pouchdb-find'));
+  PouchDB = require('pouchdb-node'),
+  createDOMPurify = require('dompurify'),
+  { JSDOM } = require('jsdom'),
+  DOMPurify = createDOMPurify((new JSDOM('')).window)
+
+PouchDB.plugin(require('pouchdb-find'))
 
 function App(data) {
   const app = express()
   app.use(morgan('tiny'))
   app.use(express.json())
+
+  const makeSafe = ({ title, description: unsafeDescription }) => ({
+    title,
+    description: DOMPurify.sanitize(unsafeDescription)
+  })
 
   const errHandler = (res) => (err) => {
     console.log(err)
@@ -20,7 +29,7 @@ function App(data) {
   )
 
   app.post('/articles', (req, res) =>
-    data.create(req.body)
+    data.create(makeSafe(req.body))
       .then((obj) => res.status(201).location('/articles/' + obj.id).json(obj))
       .catch(errHandler(res))
   )
@@ -32,7 +41,7 @@ function App(data) {
   )
 
   app.put('/articles/:id', (req, res) =>
-    data.update({ id: req.params.id, ...req.body })
+    data.update({ id: req.params.id, ...makeSafe(req.body) })
       .then((obj) => res.json(obj))
       .catch(errHandler(res))
   )
