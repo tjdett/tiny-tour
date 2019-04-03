@@ -72,13 +72,13 @@ const createBlog = (store, title, content, index) => {
   return blogEle;
 };
 
-const updateStorage = (store) => {
-  window.localStorage.setItem('tiny-blogs', JSON.stringify(store.settings));
+const saveSettings = (store) => {
+  window.localStorage.setItem('tiny-blogs.settings', JSON.stringify(store.settings));
 };
 
-const loadStorage = () => {
+const loadSettings = () => {
   try {
-    return JSON.parse(window.localStorage.getItem('tiny-blogs') || '{}');
+    return JSON.parse(window.localStorage.getItem('tiny-blogs.settings') || '{}');
   } catch (e) {
     console.error(e);
     return {};
@@ -113,7 +113,6 @@ const loadBlobs = async (mode, skin) => {
  */
 const addBlog = (store, title, content) => {
   store.data.blogs.push({title: title, content: content});
-  updateStorage(store);
   renderBlogs(store);
 
   postData(`/articles/`, { title: title, content: content })
@@ -161,7 +160,6 @@ const confirmEdit = (store, title, content, index) => {
   postData(`/articles/` + store.editIndex, { title: title, content: content }, "PUT")
     .then(data => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
     .catch(error => console.error(error));
-  updateStorage(store);
   renderBlogs(store);
 };
 
@@ -178,7 +176,6 @@ const deleteBlog = (store, index) => {
     .then(data => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
     .catch(error => console.error(error));
   store.data.blogs.splice(index, 1);
-  updateStorage(store);
   renderBlogs(store);
 };
 
@@ -337,7 +334,7 @@ const BlogsApp = async (mode, skin) => {
     settings: {
       skin: skin || 'default',
       mode: mode || 'basic',
-      ...loadStorage()
+      ...loadSettings()
     },
     editing: false,
     editIndex: 0,
@@ -382,7 +379,7 @@ const BlogsApp = async (mode, skin) => {
         blogAppEle.style.visibility = 'hidden';
         ed.remove();
         store.settings[name] = e.target.value;
-        updateStorage(store);
+        saveSettings(store);
         window.location.reload();
       }
     };
