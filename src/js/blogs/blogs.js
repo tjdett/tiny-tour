@@ -215,7 +215,7 @@ const removeBlogsFromDOM = (dom) => {
   while (dom.hasChildNodes()) {
     dom.removeChild(dom.lastChild);
   }
-  dom.innerHTML = '<div class="no-blogs">No blogs</div>';
+  dom.innerHTML = '<div class="no-blogs">No posts</div>';
 };
 
 /**
@@ -362,7 +362,7 @@ const BlogsApp = async (mode, skin) => {
   // Add the blogs container
   const blogsEle = document.createElement('div');
   blogsEle.classList.add('blogs');
-  blogsEle.innerHTML = '<div class="no-blogs">No blogs</div>';
+  blogsEle.innerHTML = '<div class="no-blogs">No posts</div>';
   blogAppEle.appendChild(blogsEle);
 
   // Load any previously saved blogs

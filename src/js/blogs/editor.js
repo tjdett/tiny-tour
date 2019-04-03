@@ -28,7 +28,8 @@ const load = (mode, skin) => {
   return tinymce.init({
     ...config,
     selector: '#editor',
-    skin: skin || 'oxide'
+    skin: skin || 'oxide',
+    height: 400
   }).then((editors) => editors[0]);
 };
 
