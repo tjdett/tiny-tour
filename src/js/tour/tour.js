@@ -43,7 +43,7 @@ const Tour = (config) => {
     if (stepIndex < 0) {
       bannerContainer.firstChild.innerHTML = 'Welcome to the tour!';
     } else if (isComplete(stepIndex)) {
-      bannerContainer.firstChild.innerHTML = 'Tour complete, press the help button to restart';
+      bannerContainer.firstChild.innerHTML = 'Congratulations you\'ve completed the tour! To restart the tour, press the help button.';
     } else {
       const step = config.steps[stepIndex];
       bannerContainer.firstChild.innerHTML = `Step ${stepIndex + 1}: ${step.details ? step.details : step.title}`
