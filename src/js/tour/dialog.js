@@ -10,6 +10,12 @@ const openDialog = (config) => {
     buttons.push(...config.buttons);
   }
 
+  // Hack needed to get the iframe in the TinyMCE dialog to take up the full height
+  tinymce.activeEditor.once('OpenWindow', () => {
+    const iframe = document.querySelector('.tox-dialog .tox-form__group iframe');
+    iframe.parentNode.style.height = '100%';
+  });
+
   return tinymce.activeEditor.windowManager.open({
     title: 'Tiny Tour',
     size: 'large',

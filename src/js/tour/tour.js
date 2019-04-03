@@ -125,7 +125,7 @@ const Tour = (config) => {
 
   const prev = () => {
     if (hasPrevStep(activeStepIndex)) {
-      showStep(activeStepIndex - 1);
+      showStep(activeStepIndex - 1, true);
     } else {
       end();
     }
