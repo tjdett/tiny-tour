@@ -12,10 +12,7 @@ const init = async (tourConfig, mode, skin) => {
 
   // Initialize the tour
   const tour = Tour(tourConfig);
-
-  blogApp.on('init', () => {
-    tour.start();
-  });
+  tour.start();
 
   blogApp.on('save edit', (e) => {
     tour.notify(e.type);
