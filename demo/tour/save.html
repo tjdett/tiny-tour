@@ -7,7 +7,7 @@
     <h2>Save</h2>
     <p>Clicking the Save button extracts the content from each field in the form and sends it to the server by calling the <span class="example">/save</span> API running on the <em>Node</em> server.  Only the content and not the actual HTML form is sent to the server. Examining <span class="example">/src/xxx/xxx.js</span> you can see that this is done via <strong>AJAX</strong>. Use the <span class="example">getContent()</span> API to get data from the editor. This API gets the current HTML content from the editor instance. We combine that data with the data from the standard input field and send that to the server.</p>
 
-    <p>For more information on getting content from the editor, refer to <a href="https://www.tiny.cloud/docs/api/tinymce/tinymce.editor/#getcontent">#getcontent</a>.</p>
+    <p>For more information on getting content from the editor, refer to <a href="https://www.tiny.cloud/docs/api/tinymce/tinymce.editor/#getcontent">getContent()</a>.</p>
 
     <p><strong>NOTE:</strong> Although there is only one editor instance in this example application, there are multiple ways to target a specific editor instance on a page. Use the <a href="https://www.tiny.cloud/docs/api/tinymce/root_tinymce/#get">get()</a> method to identify which editor instance we want to target.</p>
 

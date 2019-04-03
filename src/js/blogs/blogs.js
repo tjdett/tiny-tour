@@ -129,7 +129,7 @@ const editBlog = (state, blogId) => {
     state.editId = blog.id;
 
     // Update the TinyMCE editor content and add the blog-edit class
-    editor.populate(state.editor, blog.content);
+    editor.reset(state.editor, blog.content);
     const editorEle = document.querySelector('.blogApp .blog-content');
     editorEle.classList.add('blog-edit');
 

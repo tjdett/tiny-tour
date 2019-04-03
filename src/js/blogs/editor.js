@@ -37,22 +37,16 @@ const load = (mode, skin) => {
  * Reset the editor state back to the initial state.
  *
  * @param editor The editor instance to reset.
+ * @param content Optional content to reset the editor to.
  */
-const reset = (editor) => {
-  editor.setContent('');
+const reset = (editor, content = '') => {
+  editor.setContent(content);
   editor.undoManager.clear();
   editor.undoManager.add();
   editor.setDirty(false);
 };
 
-const populate = (editor, content) => {
-  editor.setContent(content);
-  editor.undoManager.add();
-  editor.setDirty(true);
-}
-
 export {
   load,
-  reset,
-  populate
+  reset
 }
