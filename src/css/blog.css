@@ -52,6 +52,7 @@
     box-sizing: border-box;
     border-left: 1px solid #ccc;
     display: flex;
+    flex-wrap: wrap;
     height: 100%;
     overflow-y: scroll;
     width: 30%;
