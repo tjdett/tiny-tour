@@ -1,9 +1,9 @@
 import { Tour } from "./tour/tour.js";
 import { BlogsApp } from "./blogs/blogs.js";
 
-const init = (tourConfig, mode, skin) => {
+const init = async (tourConfig, mode, skin) => {
   // Initialize the blog app
-  const blogApp = BlogsApp(mode, skin);
+  const blogApp = await BlogsApp(mode, skin);
 
   // Add a dummy blog
   if (blogApp.getBlogs().length === 0) {

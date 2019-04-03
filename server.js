@@ -16,7 +16,8 @@ function App(data) {
   ['demo', 'node_modules', 'src'].forEach(
     (dir) => app.use('/' + dir, express.static(dir))
   )
-  app.get('/', (_, req) => req.redirect('/demo/demo.html'))
+  // app.get('/', (_, req) => req.redirect('/demo/demo.html'))
+  app.get('/', (_, req) => req.redirect('/demo/welcome.html'))
 
   const makeSafe = ({ title, content: unsafeContent }) => ({
     title,

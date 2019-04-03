@@ -1,5 +1,6 @@
 import * as editor from "./editor.js";
 import EventDispatcher from "../../../node_modules/EventDispatcher/src/EventDispatcher.js";
+// import axios from "../../../node_modules/axios/dist/axios.js";
 
 /**
  * Creates a Edit, Delete, etc... action button for a single blog.
@@ -73,15 +74,38 @@ const createBlog = (store, title, content, index) => {
 
 const updateStorage = (store) => {
   window.localStorage.setItem('tiny-blogs', JSON.stringify(store.data));
+  // postData(`/articles/`, { title: title, content: content })
+  //   .then(data => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
+  //   .catch(error => console.error(error));
+
+    // + store.data.blogs[store.data.blo]
+
 };
 
-const loadStorage = () => {
-  try {
-    return JSON.parse(window.localStorage.getItem('tiny-blogs') || '{}');
-  } catch (e) {
-    console.error(e);
-    return {};
-  }
+const loadStorage = async (mode, skin) => {
+// async function loadStorage(mode, skin) {
+  console.log('Load storage');
+
+  const fetched = await fetch('/articles/')
+    .then(function(response) {
+      if (response.status !== 200) {
+        throw "load storage failed";
+      }
+      return response.json();
+    })
+    .then(function(myJson) {
+      console.log(JSON.stringify(myJson.articles));
+      return JSON.stringify({blogs: myJson.articles});
+    });
+
+  return fetched;
+    
+  // try {
+  //   return JSON.parse(window.localStorage.getItem('tiny-blogs') || '{}');
+  // } catch (e) {
+  //   console.error(e);
+  //   return {};
+  // }
 };
 
 /**
@@ -92,10 +116,30 @@ const loadStorage = () => {
  * @param content The HTML content of the blog entry.
  */
 const addBlog = (store, title, content) => {
-  store.data.blogs.push({title: title, body: content});
+  store.data.blogs.push({title: title, content: content});
   updateStorage(store);
   renderBlogs(store);
+
+  postData(`/articles/`, { title: title, content: content })
+    .then(data => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
+    .catch(error => console.error(error));
 };
+
+const postData = (url, blog, method = "POST") => {
+  return fetch(url, {
+    method: method || "POST",
+    mode: "cors",
+    cache: "no-cache",
+    credentials: "same-origin",
+    headers: {
+        "Content-Type": "application/json",
+    },
+    redirect: "follow",
+    referrer: "no-referrer",
+    body: JSON.stringify(blog),
+  })
+  .then(response => response.json());
+}
 
 /**
  * Loads a blog entry content/title back into the editable area so that it can
@@ -106,9 +150,9 @@ const addBlog = (store, title, content) => {
  */
 const editBlog = (store, index) => {
   if (store.editor) {
-    editor.populate(store.editor, store.data.blogs[index].body);
+    editor.populate(store.editor, store.data.blogs[index].content);
     store.editing = true;
-    store.editIndex = index;
+    store.editIndex = store.data.blogs[index].id;
     const titleEle = document.getElementById('blog-title');
     titleEle.value = store.data.blogs[index].title;
 
@@ -117,7 +161,10 @@ const editBlog = (store, index) => {
 };
 
 const confirmEdit = (store, title, content, index) => {
-  store.data.blogs[index] = {title: title, body: content};
+  store.data.blogs[index] = {title: title, content: content};
+  postData(`/articles/` + store.editIndex, { title: title, content: content }, "PUT")
+    .then(data => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
+    .catch(error => console.error(error));
   updateStorage(store);
   renderBlogs(store);
 };
@@ -129,6 +176,11 @@ const confirmEdit = (store, title, content, index) => {
  * @param index The index of the blog to delete from the stores blog list.
  */
 const deleteBlog = (store, index) => {
+  store.editIndex = store.data.blogs[index].id;
+  const deleteIndex = store.data.blogs[index].id;
+  postData(`/articles/` + deleteIndex, { title: "", content: "" }, "DELETE")
+    .then(data => console.log(JSON.stringify(data))) // JSON-string from `response.json()` call
+    .catch(error => console.error(error));
   store.data.blogs.splice(index, 1);
   updateStorage(store);
   renderBlogs(store);
@@ -150,7 +202,7 @@ const renderBlogs = (store) => {
  */
 const addBlogsToDOM = (store, dom) => {
   store.data.blogs.forEach((blog, index) => {
-    const blogEle = createBlog(store, blog.title, blog.body, index);
+    const blogEle = createBlog(store, blog.title, blog.content, index);
     dom.appendChild(blogEle);
   });
 };
@@ -213,8 +265,13 @@ const bindToggleChange = (name, changeHandler) => {
 const buildInitialHtml = (store) => {
   return `<div class="content">
           <header>
+            <div class="header-title">
               <h1>Tiny Blogs</h1>
+            </div>
+            <div class="header-buttons">
+              <div><button id="settings" class="blog-button" title="Settings"><i class="fas fa-cog"></i></div>
               <div><button id="help" class="blog-button" title="Help"><i class="far fa-question-circle"></i></button></div>
+            </div>
           </header>
           <div class="blog-form">
               <div class="blog-form__group">
@@ -251,14 +308,15 @@ const buildInitialHtml = (store) => {
  * @param mode The mode to load the blog editor in. [basic|full]
  * @param skin The skin to load the editor as. [default|dark]
  */
-const BlogsApp = (mode, skin) => {
+const BlogsApp = async (mode, skin) => {
+  const existingBlogs = await loadStorage();
   // Setup the blog app state/store
   const store = {
     data: {
       blogs: [],
       skin: skin || 'default',
       mode: mode || 'basic',
-      ...loadStorage()
+      ...JSON.parse(existingBlogs)
     },
     editing: false,
     editIndex: 0,
