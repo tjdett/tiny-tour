@@ -47,12 +47,13 @@ tinyTour.BlogsApp().then((blogApp) => {
   tour.start();
 
   // Notify the tour of events that occur in the blog app
-  blogApp.on('save edit skinChanged', (e) => {
+  blogApp.on('save edit', (e) => {
     tour.notify(e.type);
   });
 
   // Notify the tour that the app skin changed
   blogApp.on('skinChanged', (e) => {
     tour.changeSkin(e.skin);
+    tour.notify('skinChanged');
   });
 });
