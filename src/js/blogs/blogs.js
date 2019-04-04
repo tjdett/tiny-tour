@@ -1,7 +1,7 @@
 import EventDispatcher from 'EventDispatcher';
+import Swal from 'sweetalert2'
 import * as editorUtils from './editor';
 import { sendServerRequest } from './utils';
-import Swal from 'sweetalert2';
 
 /**
  * Creates a Edit, Delete, etc... action button for a single blog post.
@@ -189,7 +189,9 @@ const updateBlog = async (state, title, content, index) => {
  * @param blogId The id of the blog to delete from the stores blog list.
  */
 const deleteBlog = async (state, blogId) => {
-  const blog = state.data.blogs[blogId];  
+  const blog = state.data.blogs[blogId];
+
+  // Confirm that the blog should be deleted
   Swal.fire({
     title: 'Are you sure?',
     text: "You won't be able to revert this!",
@@ -200,6 +202,7 @@ const deleteBlog = async (state, blogId) => {
     confirmButtonText: 'Confirm',
   }).then((result) => {
     if (result.value) {
+      // Delete the blog
       if (blog) {
         sendServerRequest(`/articles/` + blogId, {title: "", content: ""}, "DELETE");
         processDataUpdate(state);
@@ -228,7 +231,7 @@ const checkBlogCount = (state) => {
   } else {
     blogsHeader.style.display = 'block';
   }
-}
+};
 
 /**
  * Re-populates the blogs list following add/edit/remove operations
@@ -452,7 +455,7 @@ const BlogsApp = async (mode, skin) => {
 
   const blogsHeader = document.createElement('div');
   blogsHeader.classList.add('blog-header');
-  blogsHeader.innerHTML = '<h3>Saved blogs</h3><p class="no-blogs">You haven\'t saved any blogs yet</p>';
+  blogsHeader.innerHTML = '<h3>Saved blogs</h3><div class="no-blogs">You haven\'t saved any blogs yet</div>';
   blogsHolder.appendChild(blogsHeader);
 
   // Add the blogs container
@@ -462,6 +465,7 @@ const BlogsApp = async (mode, skin) => {
 
   // Load any previously saved blogs
   addBlogsToDOM(state, blogsEle);
+  checkBlogCount(state);
 
   // Load the TinyMCE editor
   const editorSkin = state.settings.skin === 'dark' ? 'oxide-dark' : 'oxide';
@@ -496,8 +500,6 @@ const BlogsApp = async (mode, skin) => {
   // adding a new blog entry
   const titleEle = document.querySelector('.blogApp .blog-title');
   titleEle.focus();
-
-  checkBlogCount(state);
 
   // Trigger that the app is initialized
   state.eventDispatcher.trigger('init');

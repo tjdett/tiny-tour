@@ -34,26 +34,29 @@ const Tour = (config) => {
     }
 
     const close = document.getElementById('tour-close');
-      close.addEventListener('click', () => {
-        if (!isComplete(activeStepIndex)) {
-          Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            imageUrl: "",
-            showCancelButton: true,
-            confirmButtonColor: '#3498db',
-            cancelButtonColor: '#d80606',
-            confirmButtonText: 'Confirm',
-          }).then((result) => {
-            if (result.value) {
-              end();
-              banner.parentNode.removeChild(banner);
-            }
-          });
-        } else {
-          banner.parentNode.removeChild(banner);
-        }
-      });
+    close.addEventListener('click', () => {
+      if (!isComplete(activeStepIndex)) {
+        // The tour isn't complete, so confirm the user wants to leave
+        Swal.fire({
+          title: 'Are you sure you want to leave the tour?',
+          text: 'Your progress will be lost if you continue!',
+          imageUrl: "",
+          showCancelButton: true,
+          confirmButtonColor: '#3498db',
+          cancelButtonColor: '#d80606',
+          confirmButtonText: 'Leave tour',
+        }).then((result) => {
+          if (result.value) {
+            // End the tour and remove the banner
+            end();
+            banner.parentNode.removeChild(banner);
+          }
+        });
+      } else {
+        // Remove the banner
+        banner.parentNode.removeChild(banner);
+      }
+    });
 
     const help = document.getElementById('help');
     help.addEventListener('click', () => {

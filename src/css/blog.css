@@ -29,12 +29,7 @@
 }
 
 .blogApp .blog-header h3 {
-    margin: 0 0 5px;
-}
-
-.blogApp .blog-header p {
     margin: 0;
-    padding: 0;
 }
 
 .blogApp .blogs {
@@ -171,9 +166,8 @@
     border: 1px solid #3498db;
 }
 
-
 .blogApp .no-blogs {
-    margin: auto;
+    margin: 10px auto auto;
     color: #4a4a4a;
 }
 
