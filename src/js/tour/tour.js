@@ -18,7 +18,7 @@ const Tour = (config) => {
   let activeStepIndex = JSON.parse(storage.getItem('tiny-tour.step') || 0);
   let activeDialog;
   let running = false;
-  let currentSkin = 'default';
+  let currentSkin = config.skin || 'default';
   let bannerContainer;
 
   const initBanner = () => {
@@ -153,6 +153,9 @@ const Tour = (config) => {
       },
       wizardHtml: buildWizard(config.steps, activeStepIndex)
     };
+
+    // Add in the skin mode to the query params
+    dialogConfig.url += `?skin=${currentSkin}`;
 
     // Load the step dialog
     activeDialog = openDialog(dialogConfig);

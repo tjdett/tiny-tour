@@ -471,7 +471,8 @@ const BlogsApp = async (mode, skin) => {
     addBlog: (title, content) => createBlog(state, title, content),
     getBlogs: () => ({ ...state.data.blogs }),
     deleteBlog: (index) => deleteBlog(state, index),
-    on: (name, cb) => state.eventDispatcher.on(name, cb)
+    on: (name, cb) => state.eventDispatcher.on(name, cb),
+    getSkin: () => state.settings.skin
   };
 };
 

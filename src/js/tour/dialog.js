@@ -28,8 +28,8 @@ const openDialog = (config) => {
         },
         {
           type: 'htmlpanel',
-          html: config.helpUrl ? `<iframe style="width: 100%; height: 100%" src="${config.helpUrl}"></iframe>` :
-            `<div>${config.helpHtml}</div>`
+          html: config.url ? `<iframe style="width: 100%; height: 100%" src="${config.url}"></iframe>` :
+            `<div>${config.content}</div>`
         }
       ]
     },

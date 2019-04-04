@@ -11,39 +11,6 @@
 </head>
 <body>
     <div id="blogApp"></div>
-    <script type="module">
-        import { init } from "../src/js/index.js";
-
-        const tourConfig = {
-          steps: [
-            {
-              title: 'Create Content',
-              helpUrl: './tour/create.html',
-              details: 'Add a title and content, then click save',
-              proceedOnEvent: 'save'
-            },
-            {
-              title: 'Save',
-              helpUrl: './tour/save.html'
-            },
-            {
-              title: 'Edit Content',
-              helpUrl: './tour/edit.html',
-              details: 'Click the edit button, make some changes and then click save',
-              proceedOnEvent: 'save'
-            },
-            {
-              title: 'More features...',
-              helpUrl: './tour/more-features.html'
-            },
-            {
-              title: 'Skinning',
-              helpUrl: './tour/skinning.html'
-            }
-          ]
-        };
-
-        init(tourConfig);
-    </script>
+    <script src="./js/demo.js" type="module"></script>
 </body>
 </html>
