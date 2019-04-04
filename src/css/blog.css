@@ -233,6 +233,12 @@
 	margin-bottom: 5px;
 }
 
+.blog-skin .title-label {
+    width: 50px;
+    padding: 6px 8px 0 0;
+    text-align: right;
+}
+
 .blog-skin input {
 	display: none;
 }
@@ -261,10 +267,6 @@
 .blog-skin input:checked + label {
 	background-color: #3498db;
 	color :#fff;
-}
-
-.dark .blog-skin input:checked + label {
-
 }
 
 .blog-skin label:first-of-type {

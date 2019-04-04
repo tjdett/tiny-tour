@@ -435,14 +435,14 @@ const buildInitialHtml = (state) => {
                   </div>
                   <div>
                     <div class="blog-skin">
-                      <span style="padding: 6px 8px 0 0; width: 50px;">Skin:</span>
+                      <span class="blog-skin title-label">Skin:</span>
                       <input type="radio" id="skinDefault" name="skin" value="default" ${state.settings.skin === 'default' ? 'checked' : ''} />
                       <label for="skinDefault">Default</label>
                       <input type="radio" id="skinDark" name="skin" value="dark" ${state.settings.skin === 'dark' ? 'checked' : ''} />
                       <label for="skinDark">Dark</label>
                     </div>
                     <div class="blog-skin">
-                      <span style="padding: 6px 8px 0 0; width: 50px;">Mode:</span>
+                      <span class="blog-skin title-label">Mode:</span>
                       <input type="radio" id="modeBasic" name="mode" value="basic" ${state.settings.mode === 'basic' ? 'checked' : ''} />
                       <label for="modeBasic">Basic</label>
                       <input type="radio" id="modeAdvanced" name="mode" value="advanced" ${state.settings.mode === 'advanced' ? 'checked' : ''} />
@@ -453,12 +453,6 @@ const buildInitialHtml = (state) => {
           </div>
       </div>`;
 };
-
-{/* <div class="blog-mode">
-                      <label>Mode:</label>
-                      <input type="radio" name="mode" value="basic" ${state.settings.mode === 'basic' ? 'checked' : ''}> Basic
-                      <input type="radio" name="mode" value="advanced" ${state.settings.mode === 'advanced' ? 'checked' : ''}> Advanced
-                    </div> */}
 
 /**
  * Populates the initial state of the application, by fetch the settings and data/blogs from either
