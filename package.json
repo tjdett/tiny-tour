@@ -4,6 +4,8 @@
   "description": "Tour with a sample application of how to use TinyMCE",
   "scripts": {
     "start": "npx rollup -c && node server.js",
+    "serve": "node server.js & sleep 2 && opn http://localhost:3000",
+    "close": "kill $(lsof -t -i:3000)",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -24,6 +26,7 @@
   },
   "dependencies": {
     "EventDispatcher": "0.0.3",
+    "opn-cli": "^4.0.0",
     "sweetalert2": "^8.8.1",
     "tippy.js": "^4.2.1"
   }

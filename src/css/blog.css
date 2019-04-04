@@ -74,6 +74,18 @@
     border-color: #34485f;
 }
 
+.dark .blogApp .blog-header {
+    background: #0b1827;
+}
+
+.dark .blogApp .blog-header h3 {
+ color: #88B6E3;
+}
+
+.dark .blogApp .no-blogs {
+    color: #c8c8c8;
+}
+
 /* END DARK MODE */
 
 .blogApp .blog {
@@ -211,4 +223,53 @@
 
 .settings label:active:after {
 	width: 30px;
+}
+
+
+
+/* radio toggle */
+.blog-skin {
+	display: flex;
+	margin-bottom: 5px;
+}
+
+.blog-skin input {
+	display: none;
+}
+
+.blog-skin label {
+	background-color: #e4e4e4;
+	color: #2a2a2a;
+	font-size: 16px;
+	line-height: 1;
+	text-align: center;
+	padding: 8px 16px;
+	border: 1px solid #959595;
+    user-select: none;
+}
+
+.dark .blog-skin label {
+    background-color: #2a2a2a;
+    color: #e4e4e4;
+}
+
+.blog-skin label:hover {
+	cursor: pointer;
+}
+
+.blog-skin input:checked + label {
+	background-color: #3498db;
+	box-shadow: none;
+}
+
+.dark .blog-skin input:checked + label {
+    color: #2a2a2a;
+}
+
+.blog-skin label:first-of-type {
+	border-radius: 4px 0 0 4px;
+}
+
+.blog-skin label:last-of-type {
+	border-radius: 0 4px 4px 0;
 }

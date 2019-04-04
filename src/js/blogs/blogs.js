@@ -365,7 +365,7 @@ const bindToggleChange = (name, changeHandler) => {
   const skinEles = document.querySelectorAll(`.blogApp input[name="${name}"]`);
   skinEles.forEach((ele) => {
     ele.addEventListener('change', (e) => changeHandler(name, e));
-  })
+  });
 };
 
 /**
@@ -399,14 +399,16 @@ const buildInitialHtml = (state) => {
                   <button id="save" class="blog-button blog-button__primary">Save</button>
                   <div>
                     <div class="blog-skin">
-                        <label>Skin:</label>
-                        <input type="radio" name="skin" value="default" ${state.settings.skin === 'default' ? 'checked' : ''}> Default
-                        <input type="radio" name="skin" value="dark" ${state.settings.skin === 'dark' ? 'checked' : ''}> Dark
+                      <span style="padding: 6px 8px 0 0;">Skin:</span>
+                      <input type="radio" id="skintogdef" name="skin" value="default" ${state.settings.skin === 'default' ? 'checked' : ''} />
+                      <label for="skintogdef">Default</label>
+                      <input type="radio" id="skintogdark" name="skin" value="dark" ${state.settings.skin === 'dark' ? 'checked' : ''} />
+                      <label for="skintogdark">Dark</label>
                     </div>
                     <div class="blog-mode">
-                        <label>Mode:</label>
-                        <input type="radio" name="mode" value="basic" ${state.settings.mode === 'basic' ? 'checked' : ''}> Basic
-                        <input type="radio" name="mode" value="advanced" ${state.settings.mode === 'advanced' ? 'checked' : ''}> Advanced
+                      <label>Mode:</label>
+                      <input type="radio" name="mode" value="basic" ${state.settings.mode === 'basic' ? 'checked' : ''}> Basic
+                      <input type="radio" name="mode" value="advanced" ${state.settings.mode === 'advanced' ? 'checked' : ''}> Advanced
                     </div>
                   </div>
               </footer>
