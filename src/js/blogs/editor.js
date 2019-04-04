@@ -12,8 +12,54 @@ const basicConfig = {
  * to the `tinymce.init()` call when loading the editor in full mode.
  */
 const advancedConfig = {
-  plugins: 'code image lists media table help',
-  toolbar: 'code image lists media table help'
+  // The plugins that TinyMCE should use. Plugins provide extra functionality to TinyMCE outside of the core editing
+  // that basic mode provides.  Plugins can either be a list of names separated by spaces, or an array of space
+  // separated names like below.
+  plugins: [ 'print preview fullpage powerpaste searchreplace autolink directionality visualblocks visualchars fullscreen',
+             'image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime',
+             'advlist lists wordcount imagetools textpattern help',
+             // Premium plugins
+             'a11ychecker advcode powerpaste tinymcespellchecker'],
+
+  // The toolbar buttons that should be shown in the editor. Toolbars can be broken into groups by adding a
+  // pipe character "|" between the toolbar button names.
+  toolbar: 'bold italic strikethrough forecolor backcolor | formatselect fontselect fontsizeselect | ' +
+           'alignleft aligncenter alignright alignjustify | numlist bullist outdent indent | link image media | ' +
+           'code pastetext | removeformat',
+
+  // Enable the more drawer feature to collapse the toolbar if it wraps
+  // The 2 modes for more drawer are 'floating' and 'sliding'
+  toolbar_drawer: 'floating',
+
+  // Link plugin configuration
+  link_list: [
+    { title: 'TinyMCE', value: 'http://www.tinymce.com' },
+    { title: 'Moxiecode', value: 'http://www.moxiecode.com' }
+  ],
+
+  // Image plugin configuration
+  image_advtab: true,                                     // Show the advanced tab in the insert image dialog
+  image_caption: true,                                    // Show the caption option in the insert image dialog
+  image_list: [
+    { title: 'TinyMCE', value: 'http://www.tinymce.com' },
+    { title: 'Moxiecode', value: 'http://www.moxiecode.com' }
+  ],
+
+  // Template plugin configuration
+  templates: [
+    { title: 'Example 1', content: 'My content' },
+    { title: 'Example 2', content: '<div class="mceTmpl"><span class="cdate">cdate</span><span class="mdate">mdate</span>My content2</div>' }
+  ],
+  template_cdate_format: '[CDATE: %m/%d/%Y : %H:%M:%S]',  // Date format for 'created' dates
+  template_mdate_format: '[MDATE: %m/%d/%Y : %H:%M:%S]',  // Date format for 'modified' dates
+
+  // TinyMCE premium spellchecker plugin configuration
+  spellchecker_dialog: false,                             // Use as you type spellchecking instead of a dialog
+  spellchecker_whitelist: ['Ephox', 'Moxiecode'],         // Add "Ephox" and "Moxiecode" as whitelisted words
+
+  // PowerPaste premium plugin configuration
+  powerpaste_word_import: 'clean',                        // Clean all formatting when pasting from word
+  powerpaste_html_import: 'merge'                         // Merge formatting when pasting regular HTML
 };
 
 // Hack to work around skin switching issues in TinyMCE
