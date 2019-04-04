@@ -62,12 +62,13 @@
     padding: 8px;
 }
 
-.tour-banner:empty {
-    display: none;
-}
-
 .tour-banner+.blogApp {
     height: calc(100% - 46px);
+}
+
+.tour-buttons .tour-button,
+.tour-buttons .close-button {
+    margin-left: 5px;
 }
 
 .tour-button {
