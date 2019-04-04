@@ -5,6 +5,29 @@
     <script src="../js/tour-content.js"></script>
 </head>
 <body>
-    <p>placeholder</p>
+    <h2>Exposing More Features in TinyMCE?</h2>
+    <p>The instance of TinyMCE used in this example offers a limited set of capabilities on the toolbar and no menubar at all. Developers integrating TinyMCE can choose to expose more features for content authors. The following walkthrough demonstrates the configurability and extensibility of TinyMCE.</p>
+
+    <p>Click the <strong>Basic/Full Editor toggle</strong> to reload the editor and see more options. Let’s look at how we do this!</p>
+
+    <p></p>Open <span class="example">/src/xxx/xxx.js</span> in a text editor.  This file contains the configuration for the Advanced editor configuration in the micro-blog example application. Here is a step-by-step example:
+
+    <ol>
+        <li>
+            <p>This example using the <strong>table</strong> plugin, but you can configure any of plugins you choose. Experiment!</p>
+        </li>
+        <li>
+            <p><a href="https://www.tiny.cloud/docs/configure/integration-and-setup/#plugins">Add the plugin</a> to the <span class="example">plugins</span> string in your TinyMCE configuration.</p>
+            <p>The <span class="example">advancedConfig</span> object located in <span class="example">/src/xxx/xxx.js</span> contains a <span class="example">plugins</span> key that references a string containing the names of each of the loaded plugins. This example string contains the value <span class="example">table</span>. Include the name of the plugin(s) in the string for the <span class="example">plugins</span> key for each plugin that you want to load.</p>
+        </li>
+        <li>
+            <p>Explore the <a href="https://www.tiny.cloud/docs/plugins/table/#configoptions">documentation</a> page for the table plugin to add additional configuration options.</p>
+            <p>This example defines the options to appear on the floating table toolbar. The <a href="https://www.tiny.cloud/docs/plugins/table/#table_toolbar"><span class="example">table_toolbar</span></a> configuration option allows you to decide the features you want on that toolbar. Review the documentation for each of TinyMCE’s plugins to ensure the configurations meet your use cases.</p>
+        </li>
+    </ol>
+
+    <p>Review the <span class="example">advancedConfig</span> object to see all of the additional plugins that are loaded via this configuration.</p>
+
+    <p>Choosing and configuring your plugins is an important step in ensuring TinyMCE satisfies the needs of your content authors.</p>
 </body>
 </html>

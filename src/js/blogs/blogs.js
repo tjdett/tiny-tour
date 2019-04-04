@@ -368,7 +368,7 @@ const buildInitialHtml = (state) => {
                     <div class="blog-button-group">
                         <label>Mode:</label>
                         <input type="radio" name="mode" value="basic" ${state.settings.mode === 'basic' ? 'checked' : ''}> Basic
-                        <input type="radio" name="mode" value="full" ${state.settings.mode === 'full' ? 'checked' : ''}> Full
+                        <input type="radio" name="mode" value="advanced" ${state.settings.mode === 'advanced' ? 'checked' : ''}> Advanced
                     </div>
                   </div>
               </footer>

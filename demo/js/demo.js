@@ -19,11 +19,20 @@ const tourConfig = {
       proceedOnEvent: 'save'
     },
     {
-      title: 'More features...',
+      title: 'Exposing More Features in TinyMCE?',
       url: './tour/more-features.html'
     },
     {
-      title: 'Skinning',
+      title: 'Changing How TinyMCE Looks via a Custom Skin',
+      url: './tour/skinning.html',
+      proceedOnEvent: 'skinChanged'
+    },
+    {
+      title: 'Developer/Power User Spotlight: Modifying the HTML code',
+      url: './tour/modifying-the-html-code.html'
+    },
+    {
+      title: 'Business User Spotlight: Pasting Microsoft Word Content into TinyMCE',
       url: './tour/skinning.html'
     }
   ]
@@ -38,12 +47,12 @@ tinyTour.BlogsApp().then((blogApp) => {
   tour.start();
 
   // Notify the tour of events that occur in the blog app
-  blogApp.on('save edit', (e) => {
+  blogApp.on('save edit skinChanged', (e) => {
     tour.notify(e.type);
   });
 
   // Notify the tour that the app skin changed
-  blogApp.on('skinChange', (e) => {
+  blogApp.on('skinChanged', (e) => {
     tour.changeSkin(e.skin);
   });
 });

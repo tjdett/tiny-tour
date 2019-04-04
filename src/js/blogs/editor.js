@@ -8,12 +8,12 @@ const basicConfig = {
 };
 
 /**
- * The TinyMCE configuration for a fully featured editor. This will be the configuration passed
+ * The TinyMCE configuration for a nearly fully featured editor. This will be the configuration passed
  * to the `tinymce.init()` call when loading the editor in full mode.
  */
-const fullConfig = {
-  plugins: 'image lists media table help',
-  toolbar: 'image lists media table help'
+const advancedConfig = {
+  plugins: 'code image lists media table help',
+  toolbar: 'code image lists media table help'
 };
 
 // Hack to work around skin switching issues in TinyMCE
@@ -34,7 +34,7 @@ const toggleSkinCss = (skin, state) => {
  * @returns Promise<Editor>
  */
 const load = async (mode, skin) => {
-  const config = mode === 'full' ? fullConfig: basicConfig;
+  const config = mode === 'advanced' ? advancedConfig: basicConfig;
   const editors = await tinymce.init({
     ...config,
     selector: '#editor',
