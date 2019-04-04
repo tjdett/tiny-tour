@@ -23,6 +23,7 @@
     "tinymce": "^5.0.3"
   },
   "dependencies": {
-    "EventDispatcher": "0.0.3"
+    "EventDispatcher": "0.0.3",
+    "sweetalert2": "^8.8.1"
   }
 }

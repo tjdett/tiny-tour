@@ -24,7 +24,7 @@ const Tour = (config) => {
   const initBanner = () => {
     const banner = document.createElement('div');
     banner.classList.add('tour-banner');
-    banner.innerHTML = '<div></div><div><button id="help" class="tour-button" title="Help"><i class="far fa-question-circle"></i></button></div>';
+    banner.innerHTML = '<div></div><div><button id="help" class="tour-button" title="Help" style="margin-right: 5px;">Need help?</button><button id="close" class="close-button"><i class="fas fa-times"></i></button></div>';
 
     if (document.body.hasChildNodes()) {
       document.body.insertBefore(banner, document.body.firstChild);
