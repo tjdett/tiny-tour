@@ -16,6 +16,16 @@ const fullConfig = {
   toolbar: 'image lists media table help'
 };
 
+// Hack to work around skin switching issues in TinyMCE
+const toggleSkinCss = (skin, state) => {
+  const stylesheets = document.querySelectorAll('head link[rel="stylesheet"]');
+  stylesheets.forEach((stylesheet) => {
+    if (stylesheet.href.indexOf(`${skin}/skin.min.css`) !== -1) {
+      stylesheet.disabled = state;
+    }
+  })
+};
+
 /**
  * Loads a new editor.
  *
@@ -23,14 +33,20 @@ const fullConfig = {
  * @param skin The skin to use for the editor.
  * @returns Promise<Editor>
  */
-const load = (mode, skin) => {
+const load = async (mode, skin) => {
   const config = mode === 'full' ? fullConfig: basicConfig;
-  return tinymce.init({
+  const editors = await tinymce.init({
     ...config,
     selector: '#editor',
     skin: skin || 'oxide',
     height: 400
-  }).then((editors) => editors[0]);
+  });
+
+  // Enable the skin if it was previously loaded, as TinyMCE doesn't clean up skin css currently
+  // so we disable them in the remove call below
+  toggleSkinCss(skin, false);
+
+  return editors[0];
 };
 
 /**
@@ -46,7 +62,25 @@ const reset = (editor, content = '') => {
   editor.setDirty(false);
 };
 
+const remove = (editor) => {
+  // Remove the editor
+  editor.remove();
+
+  // Disable the loaded skin, as TinyMCE doesn't clean up skin css currently
+  toggleSkinCss(editor.settings.skin, true);
+};
+
+const replace = async (editor, mode, skin) => {
+  const content = editor.getContent();
+  remove(editor);
+  const newEditor = await load(mode, skin);
+  reset(newEditor, content);
+  return newEditor;
+};
+
 export {
   load,
-  reset
+  remove,
+  reset,
+  replace
 }

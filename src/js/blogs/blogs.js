@@ -1,5 +1,5 @@
 import EventDispatcher from '../../../node_modules/EventDispatcher/src/EventDispatcher.js';
-import * as editor from './editor.js';
+import * as editorUtils from './editor.js';
 import { sendServerRequest } from './utils.js';
 
 /**
@@ -129,7 +129,7 @@ const editBlog = (state, blogId) => {
     state.editId = blog.id;
 
     // Update the TinyMCE editor content and add the blog-edit class
-    editor.reset(state.editor, blog.content);
+    editorUtils.reset(state.editor, blog.content);
     const editorEle = document.querySelector('.blogApp .blog-content');
     editorEle.classList.add('blog-edit');
 
@@ -272,7 +272,7 @@ const save = (state) => {
     state.editId = null;
     // Reset the blog input/editor
     titleEle.value = null;
-    editor.reset(state.editor);
+    editorUtils.reset(state.editor);
 
     state.eventDispatcher.trigger('save');
   } else {
@@ -363,6 +363,41 @@ const populateState = async (mode, skin) => {
   };
 };
 
+const changeSkin = async (state, skin) => {
+  // Remove any current classes for the skin
+  document.body.classList.remove('dark');
+
+  // Set the new skin and add the dark class if we're running in dark mode
+  state.settings.skin = skin;
+  if (state.settings.skin === 'dark') {
+    document.body.classList.add('dark');
+  }
+  saveSettings(state.settings);
+
+  // Replace the editor
+  if (state.editor) {
+    const editorSkin = state.settings.skin === 'dark' ? 'oxide-dark' : 'oxide';
+    state.editor = await editorUtils.replace(state.editor, state.settings.mode, editorSkin);
+  }
+
+  // Notify that we've changed the skin
+  state.eventDispatcher.trigger('skinChanged', [{ skin }]);
+};
+
+const changeMode = async (state, mode) => {
+  state.settings.mode = mode;
+  saveSettings(state.settings);
+
+  // Replace the editor
+  if (state.editor) {
+    const editorSkin = state.settings.skin === 'dark' ? 'oxide-dark' : 'oxide';
+    state.editor = await editorUtils.replace(state.editor, state.settings.mode, editorSkin);
+  }
+
+  // Notify that we've changed the mode
+  state.eventDispatcher.trigger('modeChanged', [{ mode }]);
+};
+
 /**
  * Initialize and setup the Tiny Blog application. This will find the element with the
  * `blogApp` id and initialize the application inside that element.
@@ -374,17 +409,14 @@ const BlogsApp = async (mode, skin) => {
   // Setup the blog app state
   const state = await populateState(mode, skin);
 
+  // Update the blog app skin
+  await changeSkin(state, state.settings.skin);
+
   // Setup the root element, by adding the 'blogApp' class to allow styling and
   // set the app as hidden for now until loading completes
   const blogAppEle = document.getElementById('blogApp');
   blogAppEle.classList.add('blogApp');
   blogAppEle.style.visibility = 'hidden';
-
-  // Add the dark class if we're running in dark mode
-  if (state.settings.skin === 'dark') {
-    blogAppEle.classList.add('dark');
-    document.body.classList.add('dark');
-  }
 
   // Create the app content/HTML
   blogAppEle.innerHTML = buildInitialHtml(state);
@@ -400,7 +432,7 @@ const BlogsApp = async (mode, skin) => {
 
   // Load the TinyMCE editor
   const editorSkin = state.settings.skin === 'dark' ? 'oxide-dark' : 'oxide';
-  state.editor = await editor.load(state.settings.mode, editorSkin);
+  state.editor = await editorUtils.load(state.settings.mode, editorSkin);
 
   // Bind to click events on the save button
   const saveElm = document.getElementById('save');
@@ -410,10 +442,15 @@ const BlogsApp = async (mode, skin) => {
   const changeHandler = (name, e) => {
     if (e.target.checked) {
       blogAppEle.style.visibility = 'hidden';
-      state.editor.remove();
-      state.settings[name] = e.target.value;
-      saveSettings(state.settings);
-      window.location.reload();
+      switch (name) {
+        case 'skin':
+          changeSkin(state, e.target.value);
+          break;
+        case 'mode':
+          changeMode(state, e.target.value);
+          break;
+      }
+      blogAppEle.style.visibility = 'visible';
     }
   };
   bindToggleChange('skin', changeHandler);

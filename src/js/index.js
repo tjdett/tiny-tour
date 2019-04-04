@@ -13,6 +13,11 @@ const init = async (tourConfig, mode, skin) => {
   blogApp.on('save edit', (e) => {
     tour.notify(e.type);
   });
+
+  // Notify the tour that the app skin changed
+  blogApp.on('skinChange', (e) => {
+    tour.changeSkin(e.skin);
+  });
 };
 
 export {

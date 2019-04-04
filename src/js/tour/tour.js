@@ -18,6 +18,7 @@ const Tour = (config) => {
   let activeStepIndex = JSON.parse(storage.getItem('tiny-tour.step') || 0);
   let activeDialog;
   let running = false;
+  let currentSkin = 'default';
   let bannerContainer;
 
   const initBanner = () => {
@@ -207,6 +208,10 @@ const Tour = (config) => {
     }
   };
 
+  const changeSkin = (skin) => {
+    currentSkin = skin;
+  };
+
   return {
     start,
     end,
@@ -214,7 +219,8 @@ const Tour = (config) => {
     prev,
     notify,
     resume,
-    restart
+    restart,
+    changeSkin
   }
 };
 
