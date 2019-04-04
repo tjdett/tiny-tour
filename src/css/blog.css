@@ -34,7 +34,7 @@
 
 .blogApp .blogs {
     box-sizing: border-box;
-    height: calc(100% - 60px);
+    height: calc(100% - 90px);
     overflow-y: scroll;
 }
 
