@@ -1,7 +1,7 @@
 import EventDispatcher from 'EventDispatcher';
 import * as editorUtils from './editor';
 import { sendServerRequest } from './utils';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
 
 /**
  * Creates a Edit, Delete, etc... action button for a single blog post.
@@ -193,24 +193,19 @@ const deleteBlog = async (state, blogId) => {
   Swal.fire({
     title: 'Are you sure?',
     text: "You won't be able to revert this!",
-    type: 'warning',
+    imageUrl: "",
     showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!'
+    confirmButtonColor: '#3498db',
+    cancelButtonColor: '#d80606',
+    confirmButtonText: 'Confirm',
   }).then((result) => {
     if (result.value) {
       if (blog) {
         sendServerRequest(`/articles/` + blogId, {title: "", content: ""}, "DELETE");
         processDataUpdate(state);
       }
-      Swal.fire(
-        'Deleted!',
-        'Your file has been deleted.',
-        'success'
-      )
     }
-  })
+  });
 };
 
 /**

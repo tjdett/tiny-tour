@@ -1,4 +1,5 @@
 import { openDialog } from "./dialog";
+import Swal from 'sweetalert2';
 
 const buildWizard = (steps, currentStepIndex) => {
   const stepsContent = steps.map((step, index) => {
@@ -24,13 +25,35 @@ const Tour = (config) => {
   const initBanner = () => {
     const banner = document.createElement('div');
     banner.classList.add('tour-banner');
-    banner.innerHTML = '<div></div><div><button id="help" class="tour-button" title="Help" style="margin-right: 5px;">Need help?</button><button id="close" class="close-button"><i class="fas fa-times"></i></button></div>';
+    banner.innerHTML = '<div></div><div><button id="help" class="tour-button" title="Help" style="margin-right: 5px;">Need help?</button><button id="tour-close" class="close-button"><i class="fas fa-times"></i></button></div>';
 
     if (document.body.hasChildNodes()) {
       document.body.insertBefore(banner, document.body.firstChild);
     } else {
       document.body.appendChild(banner);
     }
+
+    const close = document.getElementById('tour-close');
+      close.addEventListener('click', () => {
+        if (!isComplete(activeStepIndex)) {
+          Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            imageUrl: "",
+            showCancelButton: true,
+            confirmButtonColor: '#3498db',
+            cancelButtonColor: '#d80606',
+            confirmButtonText: 'Confirm',
+          }).then((result) => {
+            if (result.value) {
+              end();
+              banner.parentNode.removeChild(banner);
+            }
+          });
+        } else {
+          banner.parentNode.removeChild(banner);
+        }
+      });
 
     const help = document.getElementById('help');
     help.addEventListener('click', () => {
