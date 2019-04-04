@@ -1,5 +1,5 @@
 import Swal from 'sweetalert2';
-import tippy from 'tippy.js'
+import tippy from 'tippy.js';
 import { openDialog } from "./dialog";
 
 const buildWizard = (steps, currentStepIndex) => {
@@ -162,7 +162,7 @@ const Tour = (config) => {
         const instance = tippy(targetElm, {
           arrow: true,
           content: tooltip.content,
-          placement: tooltip.placement || "bottom-end",
+          placement: tooltip.placement || 'bottom-end',
           theme: currentSkin === 'dark' ? 'light' : 'dark'
         });
         instance.show();

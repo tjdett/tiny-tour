@@ -1,0 +1,33 @@
+.tippy-content {
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+}
+
+/* START ERROR THEME */
+
+.tippy-tooltip.error-theme {
+    background-color: #d80606;
+    color: white;
+}
+
+.tippy-tooltip.error-theme[data-animatefill] {
+    background-color: transparent;
+}
+
+.tippy-tooltip.error-theme .tippy-backdrop {
+    background-color: #d80606;
+}
+
+.tippy-tooltip.error-theme[x-placement^='top'] .tippy-arrow {
+    border-top-color: #d80606;
+}
+.tippy-tooltip.error-theme[x-placement^='bottom'] .tippy-arrow {
+    border-bottom-color: #d80606;
+}
+.tippy-tooltip.error-theme[x-placement^='left'] .tippy-arrow {
+    border-left-color: #d80606;
+}
+.tippy-tooltip.error-theme[x-placement^='right'] .tippy-arrow {
+    border-right-color: #d80606;
+}
+
+/* END ERROR THEME */

@@ -1,4 +1,5 @@
 import EventDispatcher from 'EventDispatcher';
+import tippy from 'tippy.js';
 import Swal from 'sweetalert2'
 import * as editorUtils from './editor';
 import { sendServerRequest } from './utils';
@@ -93,6 +94,57 @@ const loadSettings = () => {
   }
 };
 
+const addChangeRequired = (state, ele, actionClass, tooltip, onAttach, onDetach) => {
+  let tooltipInstance;
+
+  // Check the class/events haven't already been registered
+  if (ele.classList.contains(actionClass)) {
+    return;
+  }
+
+  // Add the class and bind to relevant event
+  ele.classList.add(actionClass);
+  const changeHandler = () => {
+    ele.classList.remove(actionClass);
+    onDetach(changeHandler);
+    if (tooltipInstance) {
+      tooltipInstance.destroy();
+    }
+  };
+  onAttach(changeHandler);
+
+  // Show the tooltip if required
+  if (tooltip) {
+    tooltipInstance = tippy(ele, {
+      arrow: true,
+      hideOnClick: false,
+      placement: 'bottom-end',
+      trigger: 'manual',
+      ...tooltip
+    });
+    tooltipInstance.show();
+  }
+};
+
+const addTitleChangeRequired = (state, titleEle, actionClass, tooltip) => {
+  addChangeRequired(state, titleEle, actionClass, tooltip, (handler) => {
+    titleEle.addEventListener('change', handler);
+    state.eventDispatcher.on('save', handler);
+  }, (handler) => {
+    titleEle.removeEventListener('change', handler);
+    state.eventDispatcher.off('save', handler);
+  });
+};
+
+const addContentChangeRequired = (state, editorEle, actionClass, tooltip) => {
+  addChangeRequired(state, editorEle, actionClass, tooltip, (handler) => {
+    state.editor.once('change', handler);
+    state.eventDispatcher.on('save', handler);
+  }, (handler) => {
+    state.eventDispatcher.off('save', handler);
+  });
+};
+
 /**
  * Load all blog posts from the backend server.
  *
@@ -129,25 +181,17 @@ const editBlog = (state, blogId) => {
     state.editing = true;
     state.editId = blog.id;
 
-    // Update the TinyMCE editor content and add the blog-edit class
+    // Update the TinyMCE editor content
     editorUtils.reset(state.editor, blog.content);
     const editorEle = document.querySelector('.blogApp .blog-content');
-    editorEle.classList.add('blog-edit');
 
     // Update the blog title
     const titleEle = document.querySelector('.blogApp .blog-title');
-    titleEle.classList.add('blog-edit');
     titleEle.value = blog.title;
 
-    // Register listeners to remove the blog-edit class once data has changed
-    const changeHandler = () => {
-      titleEle.classList.remove('blog-edit');
-      titleEle.removeEventListener('change', changeHandler);
-    };
-    titleEle.addEventListener('change', changeHandler);
-    state.editor.once('change', () => {
-      editorEle.classList.remove('blog-edit');
-    });
+    // Add the blog-edit class and gegister listeners to remove the class once data has changed
+    addTitleChangeRequired(state, titleEle, 'blog-edit');
+    addContentChangeRequired(state, editorEle, 'blog-edit');
 
     // Dispatch an event to notify that we're editing a blog
     state.eventDispatcher.trigger('edit', [{ type: 'edit', blogId: blog.id }]);
@@ -177,8 +221,6 @@ const createBlog = async (state, title, content) => {
 const updateBlog = async (state, title, content, index) => {
   state.data.blogs[index] = {title: title, content: content};
   await sendServerRequest(`/articles/` + state.editId, { title: title, content: content }, "PUT");
-  document.querySelector('.blogApp .blog-content').classList.remove('blog-edit');
-  document.querySelector('.blogApp .blog-title').classList.remove('blog-edit');
   processDataUpdate(state);
 };
 
@@ -305,17 +347,15 @@ const save = (state) => {
     state.eventDispatcher.trigger('save');
   } else {
     if (title.length === 0) {
-      titleEle.classList.add('blog-error');
-      const changeHandler = () => {
-        titleEle.classList.remove('blog-error');
-        titleEle.removeEventListener('change', changeHandler);
-      };
-      titleEle.addEventListener('change', changeHandler);
+      addTitleChangeRequired(state, titleEle, 'blog-error', {
+        content: 'Please enter a title',
+        theme: 'error'
+      });
     }
     if (content.length === 0) {
-      editorEle.classList.add('blog-error');
-      state.editor.once('change', () => {
-        editorEle.classList.remove('blog-error');
+      addContentChangeRequired(state, editorEle, 'blog-error', {
+        content: 'Please enter some content',
+        theme: 'error'
       });
     }
   }
