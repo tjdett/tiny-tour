@@ -10,7 +10,7 @@ const tourConfig = {
     },
     {
       title: 'Save',
-      helpUrl: './tour/save.html'
+      url: './tour/save.html'
     },
     {
       title: 'Edit Content',
