@@ -1,5 +1,4 @@
-import { Tour } from "../../src/js/tour/tour.js";
-import { BlogsApp } from "../../src/js/blogs/blogs.js";
+import "../../dist/bundle.js";
 
 const tourConfig = {
   steps: [
@@ -31,10 +30,10 @@ const tourConfig = {
 };
 
 // Initialize the tour
-const tour = Tour(tourConfig);
+const tour = tinyTour.Tour(tourConfig);
 
 // Initialize the blog app
-BlogsApp().then((blogApp) => {
+tinyTour.BlogsApp().then((blogApp) => {
   tour.changeSkin(blogApp.getSkin());
   tour.start();
 

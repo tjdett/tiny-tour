@@ -13,7 +13,7 @@ function App(data) {
   app.use(express.json());
 
   // Static client setup
-  ['demo', 'node_modules', 'src'].forEach(
+  ['demo', 'node_modules', 'dist', 'src'].forEach(
     (dir) => app.use('/' + dir, express.static(dir))
   )
   // app.get('/', (_, req) => req.redirect('/demo/demo.html'))
