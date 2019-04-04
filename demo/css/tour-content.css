@@ -1,6 +1,7 @@
 body {
     color: #222f3e;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+    padding: 10px 20px;
 }
 
 body.dark {
@@ -32,15 +33,16 @@ a:hover {
 
 .flex-holder {
     display: flex;
-    margin-top: 2rem;
 }
 
 .column-left {
     width: 60%;
+    margin-right: 10px;
 }
 
 .column-right {
     border: 1px solid #ccc;
     flex: auto;
     background-color: #efefef;
+    margin-left: 10px;
 }
