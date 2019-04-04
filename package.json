@@ -4,8 +4,7 @@
   "description": "Tour with a sample application of how to use TinyMCE",
   "scripts": {
     "start": "npx rollup -c && node server.js",
-    "serve": "node server.js & sleep 2 && opn http://localhost:3000",
-    "close": "kill $(lsof -t -i:3000)",
+    "serve": "npx rollup -c && node server.js --open",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -16,6 +15,7 @@
     "express": "^4.16.4",
     "jsdom": "^14.0.0",
     "morgan": "^1.9.1",
+    "open": "^6.0.0",
     "pouchdb-find": "7.0.0",
     "pouchdb-node": "7.0.0",
     "rollup": "^1.8.0",
@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "EventDispatcher": "0.0.3",
-    "opn-cli": "^4.0.0",
     "sweetalert2": "^8.8.1",
     "tippy.js": "^4.2.1"
   }
