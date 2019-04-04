@@ -33,7 +33,7 @@ const tourConfig = {
     },
     {
       title: 'Business User Spotlight: Pasting Microsoft Word Content into TinyMCE',
-      url: './tour/skinning.html'
+      url: './tour/pasting-word-content-into-tinymce.html'
     }
   ]
 };

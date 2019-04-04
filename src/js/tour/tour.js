@@ -72,14 +72,6 @@ const Tour = (config) => {
     const step = config.steps[stepIndex];
     const buttons = [];
 
-    // Add a button to end the tour early if the user wants
-    buttons.push({
-      type: 'custom',
-      name: 'end',
-      text: 'End tour',
-      primary: !hasNextStep(stepIndex)
-    });
-
     // Add a previous button if a previous step exists
     if (hasPrevStep(stepIndex)) {
       buttons.push({
@@ -106,6 +98,16 @@ const Tour = (config) => {
           primary: true
         });
       }
+    }
+
+    if (isComplete(stepIndex + 1)) {
+      // Add a button to end the tour early if the user wants
+      buttons.push({
+        type: 'custom',
+        name: 'end',
+        text: 'End tour',
+        primary: true
+      });
     }
 
     return buttons;
