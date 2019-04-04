@@ -1,4 +1,3 @@
-import '../node_modules/hopscotch/dist/css/hopscotch.css';
 import './css/blog.css';
 import './css/tour.css';
 
