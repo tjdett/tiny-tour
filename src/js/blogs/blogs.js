@@ -150,7 +150,7 @@ const editBlog = (state, blogId) => {
     });
 
     // Dispatch an event to notify that we're editing a blog
-    state.eventDispatcher.trigger('edit', [{ blogId: blog.id }]);
+    state.eventDispatcher.trigger('edit', [{ type: 'edit', blogId: blog.id }]);
   }
 };
 
@@ -411,7 +411,7 @@ const changeSkin = async (state, skin) => {
   }
 
   // Notify that we've changed the skin
-  state.eventDispatcher.trigger('skinChanged', [{ skin }]);
+  state.eventDispatcher.trigger('skinChanged', [{ type: 'skinChanged', skin }]);
 };
 
 const changeMode = async (state, mode) => {
@@ -425,7 +425,7 @@ const changeMode = async (state, mode) => {
   }
 
   // Notify that we've changed the mode
-  state.eventDispatcher.trigger('modeChanged', [{ mode }]);
+  state.eventDispatcher.trigger('modeChanged', [{ type: 'modeChanged', mode }]);
 };
 
 /**
