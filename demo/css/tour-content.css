@@ -31,6 +31,10 @@ a:hover {
     color: #91b4e1;
 }
 
+li:not(:last-child) {
+    padding-bottom: 10px;
+}
+
 .flex-holder {
     display: flex;
 }
