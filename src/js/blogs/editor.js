@@ -42,7 +42,7 @@ const load = async (mode, skin) => {
     height: 400
   });
 
-  // Enable the skin if it was previously loaded, as TinyMCE doesn't clean up skin css currently
+  // Enable the skin css if it was previously loaded, as TinyMCE doesn't clean up skin css currently
   // so we disable them in the remove call below
   toggleSkinCss(skin, false);
 
@@ -62,6 +62,11 @@ const reset = (editor, content = '') => {
   editor.setDirty(false);
 };
 
+/**
+ * Remove the editor from the page.
+ *
+ * @param editor The editor instance to be removed.
+ */
 const remove = (editor) => {
   // Remove the editor
   editor.remove();
@@ -70,11 +75,25 @@ const remove = (editor) => {
   toggleSkinCss(editor.settings.skin, true);
 };
 
+/**
+ * Replace an editor with new settings.
+ *
+ * @param editor The editor instance to be replaced.
+ * @param mode The mode to load the editor in. [basic|full]
+ * @param skin The skin to use for the editor.
+ * @returns {Promise<Editor>}
+ */
 const replace = async (editor, mode, skin) => {
+  // Store the current editor content, so we can restore it after loading the new editor
   const content = editor.getContent();
+
+  // Remove the editor
   remove(editor);
+
+  // Load the new editor and restore the content
   const newEditor = await load(mode, skin);
   reset(newEditor, content);
+
   return newEditor;
 };
 
