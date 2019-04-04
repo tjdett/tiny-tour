@@ -1,4 +1,4 @@
-import { openDialog } from "./dialog.js";
+import { openDialog } from "./dialog";
 
 const buildWizard = (steps, currentStepIndex) => {
   const stepsContent = steps.map((step, index) => {

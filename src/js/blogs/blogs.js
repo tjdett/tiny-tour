@@ -1,6 +1,6 @@
-import EventDispatcher from '../../../node_modules/EventDispatcher/src/EventDispatcher.js';
-import * as editorUtils from './editor.js';
-import { sendServerRequest } from './utils.js';
+import EventDispatcher from 'EventDispatcher';
+import * as editorUtils from './editor';
+import { sendServerRequest } from './utils';
 
 /**
  * Creates a Edit, Delete, etc... action button for a single blog post.

@@ -1,24 +1,28 @@
 {
-  "name": "tiny-overlay",
+  "name": "tiny-tour",
   "version": "1.0.0",
-  "description": "Overlay for adding help content to TinyMCE",
+  "description": "Tour with a sample application of how to use TinyMCE",
   "scripts": {
-    "start": "node server.js",
+    "start": "npx rollup -c && node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
+  "license": "ISC",
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.8.1",
-    "EventDispatcher": "0.0.3",
-    "tinymce": "^5.0.3"
-  },
-  "dependencies": {
-    "axios": "^0.18.0",
     "dompurify": "^1.0.10",
     "express": "^4.16.4",
     "jsdom": "^14.0.0",
     "morgan": "^1.9.1",
     "pouchdb-find": "7.0.0",
-    "pouchdb-node": "7.0.0"
+    "pouchdb-node": "7.0.0",
+    "rollup": "^1.8.0",
+    "rollup-plugin-commonjs": "^9.3.0",
+    "rollup-plugin-node-resolve": "^4.0.1",
+    "rollup-plugin-postcss": "^2.0.3",
+    "tinymce": "^5.0.3"
+  },
+  "dependencies": {
+    "EventDispatcher": "0.0.3"
   }
 }

@@ -1,22 +1,21 @@
-import { Tour } from "../../src/js/tour/tour.js";
-import { BlogsApp } from "../../src/js/blogs/blogs.js";
+import "../../dist/bundle.js";
 
 const tourConfig = {
   steps: [
     {
       title: 'Create Content',
       url: './tour/create.html',
-      details: 'Add a title and content, then click save',
+      details: 'Enter a title and some content to create a new blog post, then click the save button.',
       proceedOnEvent: 'save'
     },
     {
       title: 'Save',
-      helpUrl: './tour/save.html'
+      url: './tour/save.html'
     },
     {
       title: 'Edit Content',
       url: './tour/edit.html',
-      details: 'Click the edit button, make some changes and then click save',
+      details: 'Click the edit button, make some changes and then click the save button.',
       proceedOnEvent: 'save'
     },
     {
@@ -31,10 +30,10 @@ const tourConfig = {
 };
 
 // Initialize the tour
-const tour = Tour(tourConfig);
+const tour = tinyTour.Tour(tourConfig);
 
 // Initialize the blog app
-BlogsApp().then((blogApp) => {
+tinyTour.BlogsApp().then((blogApp) => {
   tour.changeSkin(blogApp.getSkin());
   tour.start();
 
