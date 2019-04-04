@@ -1,3 +1,4 @@
+import 'tippy.js/themes/light.css'
 import './css/blog.css';
 import './css/tour.css';
 

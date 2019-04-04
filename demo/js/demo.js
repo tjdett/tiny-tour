@@ -6,7 +6,17 @@ const tourConfig = {
       title: 'Create Content',
       url: './tour/create.html',
       details: 'Enter a title and some content to create a new blog post, then click the save button.',
-      proceedOnEvent: 'save'
+      proceedOnEvent: 'save',
+      tooltips: [
+        {
+          target: '.blog-title',
+          content: 'Please enter a title'
+        },
+        {
+          target: '.blog-content',
+          content: 'Please enter some content'
+        },
+      ]
     },
     {
       title: 'Save',
@@ -16,7 +26,13 @@ const tourConfig = {
       title: 'Edit Content',
       url: './tour/edit.html',
       details: 'Click the edit button, make some changes and then click the save button.',
-      proceedOnEvent: 'save'
+      proceedOnEvent: 'save',
+      tooltips: [
+        {
+          target: '.blog-button__edit:first-of-type',
+          content: 'Please click the edit button'
+        }
+      ]
     },
     {
       title: 'Exposing More Features in TinyMCE?',
@@ -25,7 +41,13 @@ const tourConfig = {
     {
       title: 'Changing How TinyMCE Looks via a Custom Skin',
       url: './tour/skinning.html',
-      proceedOnEvent: 'skinChanged'
+      proceedOnEvent: 'skinChanged',
+      tooltips: [
+        {
+          target: '.blog-skin',
+          content: 'Please select a different skin'
+        }
+      ]
     },
     {
       title: 'Developer/Power User Spotlight: Modifying the HTML code',

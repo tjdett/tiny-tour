@@ -1,4 +1,5 @@
 import Swal from 'sweetalert2';
+import tippy from 'tippy.js'
 import { openDialog } from "./dialog";
 
 const buildWizard = (steps, currentStepIndex) => {
@@ -21,6 +22,7 @@ const Tour = (config) => {
   let running = false;
   let currentSkin = config.skin || 'default';
   let bannerContainer;
+  let activeTooltips = [];
 
   const initBanner = () => {
     const banner = document.createElement('div');
@@ -143,16 +145,35 @@ const Tour = (config) => {
     return buttons;
   };
 
-  const closeDialog = () => {
+  const closeOpenTourItems = () => {
     if (activeDialog) {
       activeDialog.close();
       activeDialog = null;
     }
+    activeTooltips.forEach((tooltip) => tooltip.destroy(true));
+    activeTooltips = [];
+  };
+
+  const tryItOut = (step) => {
+    closeOpenTourItems();
+    if (step.tooltips) {
+      step.tooltips.forEach((tooltip) => {
+        const targetElm = document.querySelector(tooltip.target);
+        const instance = tippy(targetElm, {
+          arrow: true,
+          content: tooltip.content,
+          placement: tooltip.placement || "bottom-end",
+          theme: currentSkin === 'dark' ? 'light' : 'dark'
+        });
+        instance.show();
+        activeTooltips.push(instance);
+      })
+    }
   };
 
   const showStep = (stepIndex) => {
-    // Close any active dialogs
-    closeDialog();
+    // Close any active dialogs or tooltips
+    closeOpenTourItems();
 
     // Get the step configuration
     const step = config.steps[stepIndex];
@@ -179,7 +200,7 @@ const Tour = (config) => {
             end();
             break;
           case 'tryitout':
-            closeDialog();
+            tryItOut(step);
             break;
         }
       },
@@ -222,7 +243,7 @@ const Tour = (config) => {
   };
 
   const end = () => {
-    closeDialog();
+    closeOpenTourItems();
     updateActiveStep(config.steps.length);
     running = false;
 
@@ -254,6 +275,11 @@ const Tour = (config) => {
 
   const changeSkin = (skin) => {
     currentSkin = skin;
+    activeTooltips.forEach((tooltip) => {
+      tooltip.set({
+        theme: skin === 'dark' ? 'light' : 'dark'
+      })
+    })
   };
 
   return {

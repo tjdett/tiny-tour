@@ -23,8 +23,8 @@ const renderBlogButtons = (state, blogId) => {
   buttonsEle.className = 'blog-buttons';
 
   // Create the edit/delete button elements
-  const editButton = renderButton('Edit', 'blog-button__primary', 'far fa-edit');
-  const deleteButton = renderButton('Delete', 'blog-button__error', 'far fa-trash-alt');
+  const editButton = renderButton('Edit', 'blog-button__primary blog-button__edit', 'far fa-edit');
+  const deleteButton = renderButton('Delete', 'blog-button__error blog-button__delete', 'far fa-trash-alt');
 
   // Wire up the button actions
   editButton.addEventListener('click', () => editBlog(state, blogId));
@@ -358,12 +358,12 @@ const buildInitialHtml = (state) => {
               <footer>
                   <button id="save" class="blog-button blog-button__primary">Save</button>
                   <div>
-                    <div class="blog-button-group">
+                    <div class="blog-skin">
                         <label>Skin:</label>
                         <input type="radio" name="skin" value="default" ${state.settings.skin === 'default' ? 'checked' : ''}> Default
                         <input type="radio" name="skin" value="dark" ${state.settings.skin === 'dark' ? 'checked' : ''}> Dark
                     </div>
-                    <div class="blog-button-group">
+                    <div class="blog-mode">
                         <label>Mode:</label>
                         <input type="radio" name="mode" value="basic" ${state.settings.mode === 'basic' ? 'checked' : ''}> Basic
                         <input type="radio" name="mode" value="advanced" ${state.settings.mode === 'advanced' ? 'checked' : ''}> Advanced
