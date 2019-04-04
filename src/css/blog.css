@@ -34,7 +34,7 @@
 
 .blogApp .blogs {
     box-sizing: border-box;
-    height: calc(100% - 90px);
+    height: calc(100% - 60px);
     overflow-y: scroll;
 }
 
@@ -240,17 +240,18 @@
 .blog-skin label {
 	background-color: #e4e4e4;
 	color: #2a2a2a;
-	font-size: 16px;
+	font-size: 14px;
 	line-height: 1;
 	text-align: center;
 	padding: 8px 16px;
-	border: 1px solid #959595;
-    user-select: none;
+	border: 1px solid #ccc;
+    width: 100px;
 }
 
 .dark .blog-skin label {
     background-color: #2a2a2a;
     color: #e4e4e4;
+    border: 1px solid #0b1827;
 }
 
 .blog-skin label:hover {
@@ -259,17 +260,19 @@
 
 .blog-skin input:checked + label {
 	background-color: #3498db;
-	box-shadow: none;
+	color :#fff;
 }
 
 .dark .blog-skin input:checked + label {
-    color: #2a2a2a;
+
 }
 
 .blog-skin label:first-of-type {
-	border-radius: 4px 0 0 4px;
+    border-radius: 4px 0 0 4px;
+    border-right: none;
 }
 
 .blog-skin label:last-of-type {
-	border-radius: 0 4px 4px 0;
+    border-radius: 0 4px 4px 0;
+    border-left: none;
 }
