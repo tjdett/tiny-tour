@@ -126,6 +126,17 @@ const addChangeRequired = (state, ele, actionClass, tooltip, onAttach, onDetach)
   }
 };
 
+/**
+ * Update the app to show that a change is required to be made in the blog title before being able
+ * to proceed. Once a change has been made, then the classes/tooltips added will be removed.
+ *
+ * Note: If the action class already exists on the title element, then no further action is taken.
+ *
+ * @param state The state of the various data in the application.
+ * @param titleEle The title element to add the action class to.
+ * @param actionClass The class to apply to the editor element.
+ * @param tooltip An optional tooltip configuration, if a tooltip should be shown.
+ */
 const addTitleChangeRequired = (state, titleEle, actionClass, tooltip) => {
   addChangeRequired(state, titleEle, actionClass, tooltip, (handler) => {
     titleEle.addEventListener('change', handler);
@@ -136,6 +147,17 @@ const addTitleChangeRequired = (state, titleEle, actionClass, tooltip) => {
   });
 };
 
+/**
+ * Update the app to show that a change is required to be made in the blog content before being able
+ * to proceed. Once a change has been made, then the classes/tooltips added will be removed.
+ *
+ * Note: If the action class already exists on the editor element, then no further action is taken.
+ *
+ * @param state The state of the various data in the application.
+ * @param editorEle The content editor element to add the action class to.
+ * @param actionClass The class to apply to the editor element.
+ * @param tooltip An optional tooltip configuration, if a tooltip should be shown.
+ */
 const addContentChangeRequired = (state, editorEle, actionClass, tooltip) => {
   addChangeRequired(state, editorEle, actionClass, tooltip, (handler) => {
     state.editor.once('change', handler);
@@ -265,6 +287,12 @@ const processDataUpdate = async (state) => {
   renderBlogs(state);
 };
 
+/**
+ * Checks the current number of blog posts and updates the blogs container
+ * to show if there is no posts available.
+ *
+ * @param state The state of the various data in the application.
+ */
 const checkBlogCount = (state) => {
   const count = Object.keys(state.data.blogs).length;
   const blogsHeader = document.querySelector('.no-blogs');
@@ -318,7 +346,7 @@ const removeBlogsFromDOM = (dom) => {
 };
 
 /**
- * Saves or updates a new blog entry.
+ * Creates or updates a new blog entry.
  *
  * @param state The state of the various data in the application.
  */
@@ -361,6 +389,12 @@ const save = (state) => {
   }
 };
 
+/**
+ * Bind to the settings toggle change event for a specific setting.
+ *
+ * @param name The name of the setting to bind the change event to.
+ * @param changeHandler The handler to be called when a change event occurs.
+ */
 const bindToggleChange = (name, changeHandler) => {
   const skinEles = document.querySelectorAll(`.blogApp input[name="${name}"]`);
   skinEles.forEach((ele) => {
@@ -416,6 +450,13 @@ const buildInitialHtml = (state) => {
       </div>`;
 };
 
+/**
+ * Populates the initial state of the application, by fetch the settings and data/blogs from either
+ * local storage or the backend server.
+ *
+ * @param mode An optional override for the mode to use. [basic|advanced]
+ * @param skin An optional override for the skin to use. [default|dark]
+ */
 const populateState = async (mode, skin) => {
   const existingBlogs = await loadBlogs();
   return {
@@ -433,6 +474,13 @@ const populateState = async (mode, skin) => {
   };
 };
 
+/**
+ * Change the skin being used by the application. This will update the body class and
+ * reinitialize the TinyMCE editor to use the new skin.
+ *
+ * @param state The state of the various data in the application.
+ * @param skin The new skin to use. [default|dark]
+ */
 const changeSkin = async (state, skin) => {
   // Remove any current classes for the skin
   document.body.classList.remove('dark');
@@ -454,6 +502,13 @@ const changeSkin = async (state, skin) => {
   state.eventDispatcher.trigger('skinChanged', [{ type: 'skinChanged', skin }]);
 };
 
+/**
+ * Change the mode being used by the TinyMCE editor. This will reinitialize the TinyMCE editor
+ * to use the new configuration based on the specified mode.
+ *
+ * @param state The state of the various data in the application.
+ * @param mode The new mode to use. [basic|advanced]
+ */
 const changeMode = async (state, mode) => {
   state.settings.mode = mode;
   saveSettings(state.settings);
