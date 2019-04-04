@@ -72,6 +72,19 @@ const toggleSkinCss = (skin, state) => {
   })
 };
 
+// Quick way to have a "partial" dynamic height for the editor based on the viewport height
+const getInitialEditorHeight = () => {
+  if (window.innerHeight > 900) {
+    return 600;
+  } else if (window.innerHeight > 800) {
+    return 500;
+  } else if (window.innerHeight > 700) {
+    return 400;
+  } else {
+    return 350;
+  }
+};
+
 /**
  * Loads a new editor.
  *
@@ -85,7 +98,7 @@ const load = async (mode, skin) => {
     ...config,
     selector: '#editor',
     skin: skin || 'oxide',
-    height: 400
+    height: getInitialEditorHeight()
   });
 
   // Enable the skin css if it was previously loaded, as TinyMCE doesn't clean up skin css currently
