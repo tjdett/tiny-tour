@@ -14,14 +14,33 @@
     width: 70%;
 }
 
+.blogApp .blogs-holder {
+    box-sizing: border-box;
+    width: 30%;
+    height: 100%;
+    border-left: 1px solid #ccc;
+}
+
+.blogApp .blog-header {
+    padding: 1rem 0.5rem;
+    border-bottom: 1px solid #ccc;
+    background: #e6e6e6;
+    color: #1976D2;
+}
+
+.blogApp .blog-header h3 {
+    margin: 0;
+}
+
+.blogApp .blog-header p {
+    margin: 0;
+    padding: 0;
+}
+
 .blogApp .blogs {
     box-sizing: border-box;
-    border-left: 1px solid #ccc;
-    display: flex;
-    flex-wrap: wrap;
-    height: 100%;
+    height: calc(100% - 60px);
     overflow-y: scroll;
-    width: 30%;
 }
 
 .blogApp header, .blogApp footer {
@@ -149,13 +168,13 @@
 }
 
 .blogApp .blog-edit {
-    border: 1px solid green;
+    border: 1px solid #3498db;
 }
 
 
 .blogApp .no-blogs {
     margin: auto;
-    color: #ccc;
+    color: #4a4a4a;
 }
 
 .settings input[type=checkbox] {

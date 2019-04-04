@@ -5,18 +5,25 @@
     <script src="../js/tour-content.js"></script>
 </head>
 <body>
-    <h2>Create Content</h2>
-    <p>The first screen that loads is comprised of two fields that allows you to create a new post.</p>
+    <div class="flex-holder">
+        <div class="column-left">
+            <h2>Welcome!</h2>
+            <p>The first screen that loads is comprised of two fields that allows you to create a new post.</p>
 
-    <ol>
-        <li>The Title field is a simple <span class="example">input</span> field.</li>
-        <li>The Content field is managed by TinyMCE.</li>
-    </ol>
+            <ol>
+                <li>The Title field is a simple <span class="example">input</span> field.</li>
+                <li>The Content field is managed by TinyMCE.</li>
+            </ol>
 
-    <p>The <span class="example">/src/xxx/xxx.js</span> file contains both an <span class="example">input</span> and a <span class="example">textarea</span> fields. Calling <span class="example">tinymce.init()</span> causes TinyMCE to appear. Configuration of TinyMCE is done by passing a simple JavaScript object.</p>
+            <p>The <span class="example">/src/xxx/xxx.js</span> file contains both an <span class="example">input</span> and a <span class="example">textarea</span> fields. Calling <span class="example">tinymce.init()</span> causes TinyMCE to appear. Configuration of TinyMCE is done by passing a simple JavaScript object.</p>
 
-    <p>The <a href="https://www.tiny.cloud/docs/configure/integration-and-setup/#selector">selector</a> property is the only required element in the configuration object. This configuration option tells TinyMCE which element(s) on the page to replace with TinyMCE.</p>
+            <p>The <a href="https://www.tiny.cloud/docs/configure/integration-and-setup/#selector">selector</a> property is the only required element in the configuration object. This configuration option tells TinyMCE which element(s) on the page to replace with TinyMCE.</p>
 
-    <p>Entering content into the <strong>Title</strong> and <strong>Content</strong> fields and clicking the <strong>save</strong> button will create new pieces of content.</p>
+            <p>Entering content into the <strong>Title</strong> and <strong>Content</strong> fields and clicking the <strong>save</strong> button will create new pieces of content.</p>
+        </div>
+        <div class="column-right">
+            &nbsp;
+        </div>
+    </div>
 </body>
 </html>

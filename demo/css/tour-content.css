@@ -29,3 +29,18 @@ a {
 a:hover {
     color: #91b4e1;
 }
+
+.flex-holder {
+    display: flex;
+    margin-top: 2rem;
+}
+
+.column-left {
+    width: 60%;
+}
+
+.column-right {
+    border: 1px solid #ccc;
+    flex: auto;
+    background-color: #efefef;
+}

@@ -176,6 +176,8 @@ const createBlog = async (state, title, content) => {
 const updateBlog = async (state, title, content, index) => {
   state.data.blogs[index] = {title: title, content: content};
   await sendServerRequest(`/articles/` + state.editId, { title: title, content: content }, "PUT");
+  document.querySelector('.blogApp .blog-content').classList.remove('blog-edit');
+  document.querySelector('.blogApp .blog-title').classList.remove('blog-edit');
   processDataUpdate(state);
 };
 
@@ -205,6 +207,16 @@ const processDataUpdate = async (state) => {
   renderBlogs(state);
 };
 
+const checkBlogCount = (state) => {
+  const count = Object.keys(state.data.blogs).length;
+  const blogsHeader = document.querySelector('.no-blogs');
+  if (count > 0) {
+    blogsHeader.style.display = 'none';
+  } else {
+    blogsHeader.style.display = 'block';
+  }
+}
+
 /**
  * Re-populates the blogs list following add/edit/remove operations
  *
@@ -214,6 +226,7 @@ const renderBlogs = (state) => {
   const blogsEle = document.querySelector('.blogApp .blogs');
   removeBlogsFromDOM(blogsEle);
   addBlogsToDOM(state, blogsEle);
+  checkBlogCount(state);
 };
 
 /**
@@ -244,7 +257,6 @@ const removeBlogsFromDOM = (dom) => {
   while (dom.hasChildNodes()) {
     dom.removeChild(dom.lastChild);
   }
-  dom.innerHTML = '<div class="no-blogs">No posts</div>';
 };
 
 /**
@@ -421,11 +433,19 @@ const BlogsApp = async (mode, skin) => {
   // Create the app content/HTML
   blogAppEle.innerHTML = buildInitialHtml(state);
 
+  const blogsHolder = document.createElement('div');
+  blogsHolder.classList.add('blogs-holder');
+  blogAppEle.appendChild(blogsHolder);
+
+  const blogsHeader = document.createElement('div');
+  blogsHeader.classList.add('blog-header');
+  blogsHeader.innerHTML = '<h3>Saved blogs</h3><p class="no-blogs">You haven\'t saved any blogs yet</p>';
+  blogsHolder.appendChild(blogsHeader);
+
   // Add the blogs container
   const blogsEle = document.createElement('div');
   blogsEle.classList.add('blogs');
-  blogsEle.innerHTML = '<div class="no-blogs">No posts</div>';
-  blogAppEle.appendChild(blogsEle);
+  blogsHolder.appendChild(blogsEle);
 
   // Load any previously saved blogs
   addBlogsToDOM(state, blogsEle);
@@ -463,6 +483,8 @@ const BlogsApp = async (mode, skin) => {
   // adding a new blog entry
   const titleEle = document.querySelector('.blogApp .blog-title');
   titleEle.focus();
+
+  checkBlogCount(state);
 
   // Trigger that the app is initialized
   state.eventDispatcher.trigger('init');
