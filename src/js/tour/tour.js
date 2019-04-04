@@ -1,5 +1,5 @@
-import { openDialog } from "./dialog";
 import Swal from 'sweetalert2';
+import { openDialog } from "./dialog";
 
 const buildWizard = (steps, currentStepIndex) => {
   const stepsContent = steps.map((step, index) => {
@@ -25,7 +25,7 @@ const Tour = (config) => {
   const initBanner = () => {
     const banner = document.createElement('div');
     banner.classList.add('tour-banner');
-    banner.innerHTML = '<div></div><div><button id="help" class="tour-button" title="Help" style="margin-right: 5px;">Need help?</button><button id="tour-close" class="close-button"><i class="fas fa-times"></i></button></div>';
+    banner.innerHTML = '<div></div><div><button id="tour-help" class="tour-button" style="margin-right: 5px;">Need help?</button><button id="tour-close" class="close-button"><i class="fas fa-times"></i></button></div>';
 
     if (document.body.hasChildNodes()) {
       document.body.insertBefore(banner, document.body.firstChild);
@@ -58,7 +58,7 @@ const Tour = (config) => {
       }
     });
 
-    const help = document.getElementById('help');
+    const help = document.getElementById('tour-help');
     help.addEventListener('click', () => {
       resume();
     });
@@ -67,13 +67,17 @@ const Tour = (config) => {
   };
 
   const updateBannerContent = (stepIndex) => {
+    const helpEle = document.getElementById('tour-help');
     if (stepIndex < 0) {
       bannerContainer.firstChild.innerHTML = 'Welcome to the tour!';
+      helpEle.innerText = 'Need help?';
     } else if (isComplete(stepIndex)) {
-      bannerContainer.firstChild.innerHTML = 'Congratulations you\'ve completed the tour! To restart the tour, press the help button.';
+      bannerContainer.firstChild.innerHTML = 'Congratulations you\'ve completed the tour!';
+      helpEle.innerText = 'Restart tour';
     } else {
       const step = config.steps[stepIndex];
-      bannerContainer.firstChild.innerHTML = `Step ${stepIndex + 1}: ${step.details ? step.details : step.title}`
+      bannerContainer.firstChild.innerHTML = `Step ${stepIndex + 1}: ${step.details ? step.details : step.title}`;
+      helpEle.innerText = 'Need help?';
     }
   };
 
