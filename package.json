@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "Tour with a sample application of how to use TinyMCE",
   "scripts": {
-    "start": "npx rollup -c && node server.js",
-    "serve": "npx rollup -c && node server.js --open",
+    "start": "npm run build && node server.js --open",
+    "build": "npx rollup -c",
+    "server": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
