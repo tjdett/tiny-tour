@@ -15,8 +15,8 @@ const advancedConfig = {
   // The plugins that TinyMCE should use. Plugins provide extra functionality to TinyMCE outside of the core editing
   // that basic mode provides.  Plugins can either be a list of names separated by spaces, or an array of space
   // separated names like below.
-  plugins: [ 'print preview fullpage powerpaste searchreplace autolink directionality visualblocks visualchars fullscreen',
-             'image link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime',
+  plugins: [ 'print preview searchreplace autolink directionality visualblocks visualchars fullscreen image',
+             'link media template codesample table charmap hr pagebreak nonbreaking anchor toc insertdatetime',
              'advlist lists wordcount imagetools textpattern help',
              // Premium plugins
              'a11ychecker advcode powerpaste tinymcespellchecker'],
@@ -119,6 +119,7 @@ const reset = (editor, content = '') => {
   editor.undoManager.clear();
   editor.undoManager.add();
   editor.setDirty(false);
+  editor.nodeChanged();
 };
 
 /**
@@ -145,13 +146,17 @@ const remove = (editor) => {
 const replace = async (editor, mode, skin) => {
   // Store the current editor content, so we can restore it after loading the new editor
   const content = editor.getContent();
+  const bookmark = editor.selection.getBookmark(3);
 
   // Remove the editor
   remove(editor);
 
-  // Load the new editor and restore the content
+  // Load the new editor and restore the content/selection
   const newEditor = await load(mode, skin);
-  reset(newEditor, content);
+  setTimeout(() => {
+    reset(newEditor, content);
+    newEditor.selection.moveToBookmark(bookmark);
+  }, 0);
 
   return newEditor;
 };
