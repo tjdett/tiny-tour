@@ -106,7 +106,9 @@ const addChangeRequired = (state, ele, actionClass, tooltip, onAttach, onDetach)
   ele.classList.add(actionClass);
   const changeHandler = () => {
     ele.classList.remove(actionClass);
-    onDetach(changeHandler);
+    setTimeout(() => {
+      onDetach(changeHandler);
+    }, 0);
     if (tooltipInstance) {
       tooltipInstance.destroy();
     }
@@ -140,10 +142,10 @@ const addChangeRequired = (state, ele, actionClass, tooltip, onAttach, onDetach)
 const addTitleChangeRequired = (state, titleEle, actionClass, tooltip) => {
   addChangeRequired(state, titleEle, actionClass, tooltip, (handler) => {
     titleEle.addEventListener('change', handler);
-    state.eventDispatcher.on('save', handler);
+    state.eventDispatcher.on('save delete', handler);
   }, (handler) => {
     titleEle.removeEventListener('change', handler);
-    state.eventDispatcher.off('save', handler);
+    state.eventDispatcher.off('save delete', handler);
   });
 };
 
@@ -161,9 +163,9 @@ const addTitleChangeRequired = (state, titleEle, actionClass, tooltip) => {
 const addContentChangeRequired = (state, editorEle, actionClass, tooltip) => {
   addChangeRequired(state, editorEle, actionClass, tooltip, (handler) => {
     state.editor.once('change', handler);
-    state.eventDispatcher.on('save', handler);
+    state.eventDispatcher.on('save delete', handler);
   }, (handler) => {
-    state.eventDispatcher.off('save', handler);
+    state.eventDispatcher.off('save delete', handler);
   });
 };
 
@@ -254,6 +256,7 @@ const updateBlog = async (state, title, content, index) => {
  */
 const deleteBlog = async (state, blogId) => {
   const blog = state.data.blogs[blogId];
+  console.log("editId", state.editId);
 
   // Confirm that the blog should be deleted
   Swal.fire({
@@ -266,10 +269,18 @@ const deleteBlog = async (state, blogId) => {
     confirmButtonText: 'Confirm',
   }).then((result) => {
     if (result.value) {
+      const checkAgainstEdit = state.editId !== null && blogId === state.editId;
+      if (checkAgainstEdit) {
+        document.querySelector('.blogApp .blog-title').value = null;
+        editorUtils.reset(state.editor);
+        state.editing = false;
+        state.editId = null;
+        state.eventDispatcher.trigger('delete');
+      }
       // Delete the blog
       if (blog) {
         sendServerRequest(`/articles/` + blogId, {title: "", content: ""}, "DELETE");
-        processDataUpdate(state);
+        processDataUpdate(state, !checkAgainstEdit);
       }
     }
   });
@@ -280,9 +291,11 @@ const deleteBlog = async (state, blogId) => {
  *
  * @param state The state of the various data in the application.
  */
-const processDataUpdate = async (state) => {
-  state.editing = false;
-  state.editId = null;
+const processDataUpdate = async (state, retain) => {
+  if (!retain) {
+    state.editing = false;
+    state.editId = null;
+  }
   state.data.blogs = await loadBlogs();
   renderBlogs(state);
 };
